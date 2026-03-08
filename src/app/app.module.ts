@@ -11,23 +11,40 @@ import { ROUTES } from './app.routes'
 import { CommonModule } from '@angular/common';
 import { CookieService } from 'ngx-cookie-service';
 import { ToastrModule } from 'ngx-toastr';
-import { OAuthModule, OAuthService } from 'angular-oauth2-oidc';
 import { AuthInterceptor } from './shared/services/interceptor';
-import { authConfig } from '../auth.config';
+import { AuthService } from './shared/services/oauth.service';
 
-// Função para inicializar OAuth2
-export function initializeOAuth(oauthService: OAuthService): () => Promise<void> {
+// Função para inicializar Google Identity Services
+export function initializeGoogleAuth(authService: AuthService): () => Promise<void> {
   return (): Promise<void> => {
     return new Promise<void>((resolve) => {
-      oauthService.configure(authConfig);
-      oauthService.setupAutomaticSilentRefresh();
-      oauthService.loadDiscoveryDocumentAndTryLogin().then(() => {
-        resolve();
-      });
+      // Aguarda o carregamento do script do Google
+      if (window.google) {
+        authService.initializeGoogleAuth().then(() => {
+          resolve();
+        }).catch(() => {
+          console.warn('Google Identity Services initialization failed');
+          resolve(); // Não bloqueia a aplicação se falhar
+        });
+      } else {
+        // Aguarda um pouco mais tempo para o script carregar
+        setTimeout(() => {
+          if (window.google) {
+            authService.initializeGoogleAuth().then(() => {
+              resolve();
+            }).catch(() => {
+              console.warn('Google Identity Services initialization failed');
+              resolve();
+            });
+          } else {
+            console.warn('Google Identity Services script not loaded');
+            resolve();
+          }
+        }, 1000);
+      }
     });
   };
 }
-
 
 @NgModule({
   declarations: [AppComponent],
@@ -43,13 +60,7 @@ export function initializeOAuth(oauthService: OAuthService): () => Promise<void>
     BrowserModule,
     SharedModule,
     BrowserAnimationsModule,
-    ToastrModule.forRoot(),
-    OAuthModule.forRoot({
-      resourceServer: {
-        allowedUrls: ['https://api.turify.com.br/api'], // sua API
-        sendAccessToken: true
-      }
-    })
+    ToastrModule.forRoot()
   ],
   providers: [
     NgbDropdown,
@@ -61,8 +72,8 @@ export function initializeOAuth(oauthService: OAuthService): () => Promise<void>
     },
     {
       provide: APP_INITIALIZER,
-      useFactory: initializeOAuth,
-      deps: [OAuthService],
+      useFactory: initializeGoogleAuth,
+      deps: [AuthService],
       multi: true
     }
   ],

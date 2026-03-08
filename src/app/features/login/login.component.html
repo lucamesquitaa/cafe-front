@@ -5,6 +5,10 @@
       <p>Faça login com sua conta Google para continuar</p>
       
       <div class="login-buttons">
+        <!-- Botão personalizado do Google Identity Services -->
+        <div #googleButton class="google-button-container"></div>
+        
+        <!-- Botão de fallback caso o GIS não carregue -->
         <button 
           type="button" 
           class="btn btn-google"

@@ -1,6 +1,5 @@
 import { Component, Injector } from '@angular/core';
 import { ComponentBase } from '../component.base';
-import { OAuthService } from 'angular-oauth2-oidc';
 import { MenubarService } from '../../services/menubar.service';
 
 @Component({
@@ -13,8 +12,7 @@ export class HeaderComponent extends ComponentBase{
   public appTitle: string = 'Painel da Administração';
   public currentDate: Date = new Date();
     constructor(
-        public override injector: Injector, 
-        private oauthService: OAuthService
+        public override injector: Injector
     ) {
         super(injector);
     }
@@ -31,7 +29,6 @@ export class HeaderComponent extends ComponentBase{
     localStorage.removeItem('nonce');
     localStorage.removeItem('PKCE_verifier');
     // Limpa os tokens do OAuth sem redirecionar
-    this.oauthService.logOut(true);
     // Navega para login e AGUARDA o usuário clicar no botão
     this.router.navigate(["/login"]);
     console.log('✓ Logout complete, redirected to login page');

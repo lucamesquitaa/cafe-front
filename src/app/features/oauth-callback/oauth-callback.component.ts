@@ -5,6 +5,27 @@ import { LoginService } from 'src/app/shared/services/login.service';
 import { ResultLoginModel } from 'src/app/shared/models/login.model';
 import { CookieService } from 'ngx-cookie-service';
 import { CommonModule } from '@angular/common';
+import { GoogleUserInfo } from 'src/app/shared/types/google-identity-services';
+
+// Cliente JWT decoder para decodificar o token do Google
+function parseJWT(token: string): GoogleUserInfo | null {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(function (c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join('')
+    );
+    return JSON.parse(jsonPayload) as GoogleUserInfo;
+  } catch (error) {
+    console.error('Error parsing JWT:', error);
+    return null;
+  }
+}
 
 @Component({
   selector: 'app-oauth-callback',
@@ -58,71 +79,70 @@ export class OAuthCallbackComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('=== OAUTH CALLBACK COMPONENT LOADED ===');
+    console.log('=== GIS CALLBACK COMPONENT LOADED ===');
     console.log('Current URL:', window.location.href);
     console.log('Search params:', window.location.search);
     console.log('Hash:', window.location.hash);
     
-    this.processOAuthCallback();
+    this.processGoogleCallback();
   }
 
-  private processOAuthCallback(): void {
-    console.log('=== OAUTH CALLBACK ===');
+  private processGoogleCallback(): void {
+    console.log('=== GIS CALLBACK ===');
     
-    // Tenta processar os parâmetros de callback do OAuth
-    this.authService['oauthService'].loadDiscoveryDocumentAndTryLogin().then(() => {
-      console.log('Discovery document loaded and login attempted');
-      
-      // Aguarda um pouco para o processamento do token
-      setTimeout(() => {
-        // Verifica se o usuário foi autenticado após callback
-        if (this.authService.isAuthenticated()) {
-          console.log('✓ OAuth authentication successful');
-          this.callDoLogin();
-        } else {
-          console.log('✗ OAuth authentication failed');
-          console.log('Has valid access token:', this.authService['oauthService'].hasValidAccessToken());
-          console.log('Access token:', this.authService['oauthService'].getAccessToken());
-          console.log('Identity claims:', this.authService['oauthService'].getIdentityClaims());
-          
-          this.errorMessage = 'Falha na autenticação com Google. Tente novamente.';
-          this.isProcessing = false;
-        }
-      }, 1000);
-    }).catch(error => {
-      console.error('Error loading discovery document:', error);
-      this.errorMessage = 'Erro na configuração de autenticação. Tente novamente.';
+    // Obtém o credential dos query params (enviado pelo AuthService)
+    const credential = this.route.snapshot.queryParams['credential'];
+    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+    
+    if (!credential) {
+      console.log('No credential found in URL params');
+      this.errorMessage = 'Token de autenticação não encontrado.';
       this.isProcessing = false;
-    });
+      return;
+    }
+
+    try {
+      // Decodifica o JWT token do Google
+      const userInfo: GoogleUserInfo | null = parseJWT(credential);
+      
+      if (!userInfo) {
+        throw new Error('Failed to decode Google credential');
+      }
+
+      console.log('✓ Google credential decoded:', userInfo);
+
+      // Armazena as informações do usuário no AuthService
+      this.authService.setUserInfo(userInfo);
+
+      // Chama o doLogin
+      this.callDoLogin(userInfo, returnUrl);
+
+    } catch (error) {
+      console.error('✗ Error processing Google credential:', error);
+      this.errorMessage = 'Erro ao processar credenciais do Google. Tente novamente.';
+      this.isProcessing = false;
+    }
   }
 
-  private callDoLogin(): void {
+  private callDoLogin(userInfo: GoogleUserInfo, returnUrl: string): void {
     console.log('=== CALLING DO LOGIN ===');
     
     try {
-      // Obtém dados do usuário do Google OAuth
-      const userInfo = this.authService.getUserInfo();
-      const userEmail = this.authService.getUserEmail();
-      const userName = this.authService.getUserName();
-      const userPicture = this.authService.getUserPicture();
-
-      console.log('Google user info:', userInfo);
-
-      if (!userEmail || !userName) {
+      if (!userInfo.email || !userInfo.name) {
         throw new Error('Dados do usuário do Google incompletos');
       }
 
       // Mapeia para o formato esperado pelo doLogin
-      const nameParts = userName.split(' ');
+      const nameParts = userInfo.name.split(' ');
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ') || '';
 
       const loginData: ResultLoginModel = {
-        Id: userInfo?.sub || userEmail, // Usa o sub do Google como ID, ou email como fallback
-        Email: userEmail,
+        Id: userInfo.sub, // Google user ID
+        Email: userInfo.email,
         FirstName: firstName,
         LastName: lastName,
-        Photo: userPicture || ''
+        Photo: userInfo.picture || ''
       };
 
       console.log('Calling doLogin with data:', loginData);
@@ -143,7 +163,6 @@ export class OAuthCallbackComponent implements OnInit {
           }
 
           // Redireciona para a URL apropriada
-          const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
           console.log(`✓ Redirecting to: ${returnUrl}`);
           this.isProcessing = false;
           this.router.navigate([returnUrl]);
