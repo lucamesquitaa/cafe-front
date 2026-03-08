@@ -1,6 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, Injector, Input, OnInit } from '@angular/core';
-import { OAuthService } from 'angular-oauth2-oidc';
 import { ComponentBase } from '../component.base';
 import { MenubarService } from '../../services/menubar.service';
 
