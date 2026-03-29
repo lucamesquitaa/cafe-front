@@ -47,11 +47,19 @@
 </div>
 
 <!-- Botão flutuante para adicionar novo quarto -->
-<button class="btn btn-primary buttonFlutua" 
-        (click)="onAddQuarto()" 
+<button class="btn btn-primary buttonFlutua"
+        (click)="onAddQuarto()"
         *ngIf="allQuartos && allQuartos.length >= 0"
         title="Adicionar novo quarto">
     <i class="bi bi-plus-circle"></i> Adicionar Quarto
+</button>
+
+<!-- Botão flutuante para gerenciar tipos -->
+<button class="btn btn-outline-secondary buttonFlutua2"
+        (click)="router.navigate(['/quartos/tipos', hotelId])"
+        *ngIf="hotelId"
+        title="Gerenciar tipos de quarto">
+    <i class="bi bi-tags"></i> Tipos
 </button>
 
 <!-- Loading indicator -->

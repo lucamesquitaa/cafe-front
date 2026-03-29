@@ -5,12 +5,13 @@ import { QuartosModel } from '../models/quartos.model';
 import { HttpHeaders } from '@angular/common/http';
 import { ResponseApi } from '../models/response.api';
 import { CategoryQuartosModel } from '../models/categoryQuartos.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CategoryQuartosService extends ServiceGeneric<ResponseApi<any>> {
-  override urlServiceREST: string = "https://api.turify.com.br/api/CategoryQuarto";
+  override urlServiceREST: string = environment.apiBaseUrl + "/api/CategoryQuarto";
 
   constructor(public override injector: Injector) {
     super(injector);
@@ -20,11 +21,18 @@ export class CategoryQuartosService extends ServiceGeneric<ResponseApi<any>> {
     return this.http.get<ResponseApi<CategoryQuartosModel[]>>(this.urlServiceREST +"/" + hotelId);
   }
 
+  doGetCategoryQuartoById(id: string): Observable<ResponseApi<CategoryQuartosModel>> {
+    return this.http.get<ResponseApi<CategoryQuartosModel>>(this.urlServiceREST + "/GetById/" + id);
+  }
+
   doPostCategoryQuarto(categoryQuarto: CategoryQuartosModel, hotelId: string): Observable<ResponseApi> {
     const headers = new HttpHeaders().set('Authorization', 'Bearer ' + this.cookieService.get('access_token'));
-  
     return this.http.post<ResponseApi>(this.urlServiceREST +"/PostCategoryQuarto/" + hotelId , categoryQuarto, { headers });
-    
+  }
+
+  doPutCategoryQuarto(id: string, categoryQuarto: CategoryQuartosModel, hotelId: string): Observable<ResponseApi> {
+    const headers = new HttpHeaders().set('Authorization', 'Bearer ' + this.cookieService.get('access_token'));
+    return this.http.put<ResponseApi>(this.urlServiceREST + "/PutCategoryQuarto/" + id + "/" + hotelId, categoryQuarto, { headers });
   }
 
   doDeleteCategoryQuarto(id: string): Observable<ResponseApi>{

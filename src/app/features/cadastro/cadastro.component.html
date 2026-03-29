@@ -163,8 +163,20 @@
           </div>
 
           <div class="col-lg-12 col-md-12">
-                <label for="lobby" class="form-label">Horário Recepção ou Lobby</label>
-                <input type="text" class="form-control" [(ngModel)]="itemCadastro.lobby" required="true">
+                <label class="form-label">Horário Recepção ou Lobby</label>
+                <div class="d-flex gap-2 align-items-center">
+                  <input type="number" class="form-control" [(ngModel)]="lobbyStartHour" min="1" max="12" placeholder="Hora">
+                  <select class="form-select" [(ngModel)]="lobbyStartPeriod">
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                  <span class="text-nowrap">até</span>
+                  <input type="number" class="form-control" [(ngModel)]="lobbyEndHour" min="1" max="12" placeholder="Hora">
+                  <select class="form-select" [(ngModel)]="lobbyEndPeriod">
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
               </div>
               <div class="col-lg-12 col-md-12">
                 <label for="diff" class="form-label">Descreva os principais diferenciais do hotel </label>
@@ -192,7 +204,10 @@
           </div>
           <div class="col-lg-12 col-md-12">
               <label for="tax" class="form-label">Taxa animal (opcional)</label>
-              <input type="text" class="form-control" [(ngModel)]="itemCadastro.petsTax" placeholder="R$" > 
+              <div class="input-group">
+                <span class="input-group-text">R$</span>
+                <input type="text" class="form-control" [(ngModel)]="itemCadastro.petsTax">
+              </div>
           </div>
       <div class="col-lg-12 col-md-12 redBox" *ngIf="errorList.length > 0">
           <div class="flexRow" *ngFor="let error of errorList">

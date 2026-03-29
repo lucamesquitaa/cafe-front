@@ -39,7 +39,11 @@ export class ContextoComponent extends ComponentBase{
   doGetAllHoteis(){
     this.hotelService.doGetUserIdHoteis().subscribe({
       next: (result) => {
-        this.filteredHoteis.set(result.data || []);
+        const hoteis = result.data || [];
+        this.filteredHoteis.set(hoteis);
+        if (hoteis.length === 1) {
+          this.hotel.id = hoteis[0].id;
+        }
       },
     });
   }

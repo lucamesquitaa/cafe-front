@@ -73,7 +73,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "buildTarget": "hotelaria:build:development"
+            "buildTarget": "hotelaria:build:development",
+            "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
             "production": {

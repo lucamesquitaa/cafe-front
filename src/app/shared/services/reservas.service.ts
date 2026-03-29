@@ -4,12 +4,13 @@ import { Observable } from 'rxjs';
 import { DisponiModel, AddReservaAdd, UpdateReserva } from '../models/reserva.model';
 import { ResponseApi } from '../models/response.api';
 import { ServiceGeneric } from './generic.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReservasService extends ServiceGeneric<ResponseApi<any>> {
-  override urlServiceREST: string = "https://api.turify.com.br/api/MotorDeReservas/";
+  override urlServiceREST: string = environment.apiBaseUrl + "/api/MotorDeReservas/";
 
   constructor(public override injector: Injector) {
     super(injector);

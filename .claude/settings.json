@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/Users/User/Desktop/repos/hotelaria/src/app -path *shared* -name *cama* -o -path *shared* -name *modal*)"
+    ]
+  }
+}

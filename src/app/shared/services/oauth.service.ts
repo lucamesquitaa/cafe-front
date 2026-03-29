@@ -191,7 +191,16 @@ export class AuthService {
    * Verifica se o usuário está autenticado
    */
   public isAuthenticated(): boolean {
-    return this.isAuthenticatedSubject.value;
+    if (!this.isAuthenticatedSubject.value) return false;
+    const userInfo = this.userInfoSubject.value;
+    if (this.isTokenExpired(userInfo)) {
+      this.cookieService.delete('google_user_info', '/');
+      this.cookieService.delete('access_token', '/');
+      this.isAuthenticatedSubject.next(false);
+      this.userInfoSubject.next(null);
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -240,6 +249,12 @@ export class AuthService {
     if (userInfoString) {
       try {
         const userInfo: GoogleUserInfo = JSON.parse(userInfoString);
+        if (this.isTokenExpired(userInfo)) {
+          console.warn('Token expirado, removendo autenticação');
+          this.cookieService.delete('google_user_info', '/');
+          this.cookieService.delete('access_token', '/');
+          return;
+        }
         this.userInfoSubject.next(userInfo);
         this.isAuthenticatedSubject.next(true);
         console.log('✓ Existing authentication found');
@@ -249,6 +264,15 @@ export class AuthService {
         this.cookieService.delete('google_user_info', '/');
       }
     }
+  }
+
+  /**
+   * Verifica se o token JWT está expirado
+   */
+  private isTokenExpired(userInfo: any): boolean {
+    if (!userInfo?.exp) return false;
+    const nowInSeconds = Math.floor(Date.now() / 1000);
+    return userInfo.exp < nowInSeconds;
   }
 
   /**
