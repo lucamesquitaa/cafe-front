@@ -18,7 +18,7 @@ export class CadastroTipoQuartoComponent extends ComponentBase implements OnInit
 
   activeModal = inject(NgbActiveModal);
 
-  item: CategoryQuartosModel = { name: '' };
+  item: CategoryQuartosModel = { name: '', minHospedes: 1, maxHospedes:2  };
   beds: ConfiguracaoCamaDTO[] = [];
   errorList: string[] = [];
   isEdit = false;
@@ -92,7 +92,7 @@ export class CadastroTipoQuartoComponent extends ComponentBase implements OnInit
     this.showLoading();
 
     const req = this.isEdit
-      ? this.categoryService.doPutCategoryQuarto(this.tipoId!, this.item, this.hotelId)
+      ? this.categoryService.doPutCategoryQuarto(this.tipoId!, this.item)
       : this.categoryService.doPostCategoryQuarto(this.item, this.hotelId);
 
     req.subscribe({

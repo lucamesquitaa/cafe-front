@@ -92,7 +92,7 @@ export class OAuthCallbackComponent implements OnInit {
     
     // Obtém o credential dos query params (enviado pelo AuthService)
     const credential = this.route.snapshot.queryParams['credential'];
-    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/admin';
     
     if (!credential) {
       console.log('No credential found in URL params');

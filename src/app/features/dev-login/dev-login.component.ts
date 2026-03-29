@@ -73,7 +73,7 @@ export class DevLoginComponent implements OnInit {
     this.success = true;
     this.message = 'Token aplicado! Redirecionando...';
 
-    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/admin';
     setTimeout(() => this.router.navigate([returnUrl]), 800);
   }
 }

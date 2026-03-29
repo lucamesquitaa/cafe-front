@@ -105,7 +105,7 @@ export class QuartosComponent extends ComponentBase implements OnInit {
     }
 
     this.showLoading();
-    this.quartosService.doDeleteQuarto(this.hotelId, quartoId).subscribe({
+    this.quartosService.doDeleteQuarto(quartoId, this.hotelId!).subscribe({
       next: (response: ResponseApi) => {
         if (response.sucesso || response.success) {
           this.toastr.success('Quarto excluído com sucesso.');

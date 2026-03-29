@@ -30,9 +30,9 @@ export class CategoryQuartosService extends ServiceGeneric<ResponseApi<any>> {
     return this.http.post<ResponseApi>(this.urlServiceREST +"/PostCategoryQuarto/" + hotelId , categoryQuarto, { headers });
   }
 
-  doPutCategoryQuarto(id: string, categoryQuarto: CategoryQuartosModel, hotelId: string): Observable<ResponseApi> {
+  doPutCategoryQuarto(id: string, categoryQuarto: CategoryQuartosModel): Observable<ResponseApi> {
     const headers = new HttpHeaders().set('Authorization', 'Bearer ' + this.cookieService.get('access_token'));
-    return this.http.put<ResponseApi>(this.urlServiceREST + "/PutCategoryQuarto/" + id + "/" + hotelId, categoryQuarto, { headers });
+    return this.http.put<ResponseApi>(this.urlServiceREST + "/PutCategoryQuarto/" + id , categoryQuarto, { headers });
   }
 
   doDeleteCategoryQuarto(id: string): Observable<ResponseApi>{

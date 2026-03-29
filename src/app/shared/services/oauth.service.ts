@@ -114,7 +114,7 @@ export class AuthService {
         this.router.navigate(['/oauth-callback'], {
           queryParams: { 
             credential: response.credential,
-            returnUrl: new URLSearchParams(window.location.search).get('returnUrl') || '/dashboard'
+            returnUrl: new URLSearchParams(window.location.search).get('returnUrl') || '/admin'
           }
         });
       }
@@ -192,6 +192,14 @@ export class AuthService {
    */
   public isAuthenticated(): boolean {
     if (!this.isAuthenticatedSubject.value) return false;
+
+    // Verifica se o token do backend existe (exigido pelo interceptor)
+    const hasBackendToken =
+      !!this.cookieService.get('access_token') ||
+      !!sessionStorage.getItem('access_token') ||
+      !!sessionStorage.getItem('id_token');
+    if (!hasBackendToken) return false;
+
     const userInfo = this.userInfoSubject.value;
     if (this.isTokenExpired(userInfo)) {
       this.cookieService.delete('google_user_info', '/');
