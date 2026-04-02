@@ -14,12 +14,12 @@
     </div>
     </div>
     <div class="date-row">
-        <div *ngFor="let day of dates; let i = index" class="date-cell" >
+        <div *ngFor="let day of dates; let i = index" class="date-cell" [class.guest-highlight]="isGuestMatch(day.iso)">
             <!-- Célula de disponibilidade/reserva -->
        <!-- Célula de disponibilidade/reserva -->
 <ng-container *ngIf="disponibilidadeForDate(day.iso) as disp" >
   <div (click)="editarDisponibilidade(content6, content7, disp, day.iso)" class="date-cell-container"
-       [ngbTooltip]="'Reserva de' + getGuestNameForDate(day.iso) || ''"
+       [ngbTooltip]="'Reserva de ' + getGuestNameForDate(day.iso) || ''"
        [disableTooltip]="!getGuestNameForDate(day.iso)"
        placement="bottom"
        container="body">
@@ -54,7 +54,7 @@
           <div class="dat cell-info" *ngIf="collapsed">{{ disp.statusString }}</div>
           <div class="dat cell-min" *ngIf="collapsed">{{ disp.minDays }}</div>
           <div class="dat cell-max" *ngIf="collapsed">{{ disp.maxDays }}</div>
-          <div class="dat cell-price" *ngIf="collapsed">{{ disp.dayPrice | currency:'BRL':'symbol':'1.2-2' }}</div>
+          <div class="dat cell-price" *ngIf="collapsed">{{ disp.dayPrice }}</div> 
       </div>
     </ng-container>
                   

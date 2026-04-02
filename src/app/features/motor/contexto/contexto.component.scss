@@ -90,3 +90,8 @@
 			flex-direction: column;
 			align-items: center;
 		}
+
+		:host ::ng-deep .ngb-dp-day.disabled {
+			pointer-events: auto;
+			cursor: not-allowed;
+		}

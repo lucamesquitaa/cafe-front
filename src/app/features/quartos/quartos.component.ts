@@ -124,6 +124,11 @@ export class QuartosComponent extends ComponentBase implements OnInit {
     });
   }
 
+  bedLabel(bedType: number): string {
+    const labels: Record<number, string> = { 1: 'Solteiro', 2: 'Beliche', 3: 'Casal', 4: 'Queen', 5: 'King', 6: 'Berço' };
+    return labels[bedType] ?? `Tipo ${bedType}`;
+  }
+
   onAddQuarto() {
     if (this.hotelId) {
       this.router.navigate(['/quartos/cadastro'], {

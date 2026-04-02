@@ -104,21 +104,21 @@ export class AuthInterceptor implements HttpInterceptor {
 
     private handleAuthError(error: HttpErrorResponse): Observable<never> {
         // Verificar se é erro 401 (não autorizado) ou token expirado
-        if (error.status === 401 || 
+        if (!environment.devBypass && (error.status === 401 ||
             error.error?.message?.toLowerCase().includes('token expired') ||
             error.error?.message?.toLowerCase().includes('token expirado') ||
-            error.error?.message?.toLowerCase().includes('unauthorized')) {
-            
+            error.error?.message?.toLowerCase().includes('unauthorized'))) {
+
             // Limpar todos os tokens
             this.clearAllTokens();
-            
+
             // Mostrar mensagem para o usuário
             this.toastr.warning('Sua sessão expirou. Faça login novamente.', 'Sessão Expirada');
-            
+
             // Redirecionar para a página de login
             this.router.navigate(['/login']);
         }
-        
+
         return throwError(error);
     }
 }

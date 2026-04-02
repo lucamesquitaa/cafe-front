@@ -26,7 +26,9 @@ export class MotorComponent extends ComponentBase{
   // array of { label, iso } to render header and allow date comparisons
   quartosPerHotel!: QuartosModel[];
   idModal!: number;
-  groupedByQuarto!: QuartoDisponibilidade[] ;
+  groupedByQuarto!: QuartoDisponibilidade[];
+  tipoFiltro: string = '';
+  searchTerm: string = '';
 
   collapsed: boolean = false;
   //calendar
@@ -196,7 +198,7 @@ toggleCollapse(hotelKey: string) {
       next: (response: ResponseApi<QuartosModel[]>) => {
         if ((response.sucesso || response.success) && response.data) {
           this.quartosPerHotel = response.data;
-          this.addQuartoLista = response.data;
+          this.addQuartoLista = response.data.sort((a, b) => a.numero - b.numero || a.name.localeCompare(b.name));
         } else {
           this.quartosPerHotel = [];
         }
@@ -254,6 +256,7 @@ toggleCollapse(hotelKey: string) {
                     id: quarto.id,
                     name: quarto.name,
                     number: quarto.numero,
+                    categoryName: quarto.category?.[0]?.name,
                     disponiQuarto: disponiArray,
                     reservas: reservasArray // Adiciona as reservas ao objeto
                   });
@@ -262,12 +265,13 @@ toggleCollapse(hotelKey: string) {
                   const errorMessage = error.error.mensagem || "Erro ao processar solicitação.";
                   console.error('Erro na resposta:', errorMessage);
                   this.toastr.error(errorMessage);
-                  
+
                   // Adiciona o quarto mesmo com erro nas reservas
                   allDisponibilidadeQuartos.push({
                     id: quarto.id,
                     name: quarto.name,
                     number: quarto.numero,
+                    categoryName: quarto.category?.[0]?.name,
                     disponiQuarto: disponiArray,
                     reservas: []
                   });
@@ -452,7 +456,7 @@ reloadPeriodoDisponibilidade() {
         }
       });
 
-    }else if(this.idModal == 2){
+    }else if(this.idModal == 2 || this.idModal == 3){
       this.trataStatus();
       this.addReservaAdd.checkin = this.addReservaData.startDate;
       this.addReservaAdd.checkout = this.addReservaData.endDate;
@@ -485,7 +489,6 @@ reloadPeriodoDisponibilidade() {
         }
       });
     }
-
   }
 
   trataStatus() {
@@ -550,6 +553,31 @@ reloadPeriodoDisponibilidade() {
         reembolsavel: true
       };
     }
+  }
+
+  get tiposDisponiveis(): string[] {
+    if (!this.groupedByQuarto) return [];
+    const nomes = this.groupedByQuarto
+      .map(q => q.categoryName)
+      .filter((n): n is string => !!n);
+    return [...new Set(nomes)].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  }
+
+  get filteredGroupedByQuarto(): QuartoDisponibilidade[] {
+    if (!this.groupedByQuarto) return [];
+    if (!this.tipoFiltro) return this.groupedByQuarto;
+    return this.groupedByQuarto.filter(q => q.categoryName === this.tipoFiltro);
+  }
+
+  get formattedDateRange(): { start: string; end: string } {
+    const range = this.dateRangeService.getDateRange();
+    const fmt = (iso: string): string => {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return '—';
+      return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+    };
+    return { start: fmt(range.startDate), end: fmt(range.endDate) };
   }
 
   reset(){

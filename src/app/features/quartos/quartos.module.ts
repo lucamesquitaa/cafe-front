@@ -7,6 +7,7 @@ import { QuartosComponent } from './quartos.component';
 import { CadastroQuartoComponent } from './cadastro/cadastro.component';
 import { TipoQuartoComponent } from './tipos/tipos.component';
 import { CadastroTipoQuartoComponent } from './tipos/cadastro-tipo/cadastro-tipo.component';
+import { CriarEmMassaComponent } from './criar-em-massa/criar-em-massa.component';
 
 
 @NgModule({
@@ -14,7 +15,8 @@ import { CadastroTipoQuartoComponent } from './tipos/cadastro-tipo/cadastro-tipo
     QuartosComponent,
     CadastroQuartoComponent,
     TipoQuartoComponent,
-    CadastroTipoQuartoComponent
+    CadastroTipoQuartoComponent,
+    CriarEmMassaComponent
   ],
   imports: [
     CommonModule,

@@ -1,6 +1,62 @@
 <div class="motorComponent page-with-menubar" [class.menu-collapsed]="!(menubarService.isOpen$ | async)">
   <app-reusable-grid>
-    
+
+    <div grid-actions class="grid-actions-bar">
+      <div class="primeira-actions">
+        
+        <div class="color-legend">
+          <div class="legend-row"><span class="legend-dot" style="background:#ffffff; border: 1px solid #ccc;"></span><span class="legend-label">Sem tarifa</span></div>
+          <div class="legend-row"><span class="legend-dot" style="background:#cecece"></span><span class="legend-label">Disponível</span></div>
+          <div class="legend-row"><span class="legend-dot" style="background:#ffc107"></span><span class="legend-label">Pré-Reserva</span></div>
+          <div class="legend-row"><span class="legend-dot" style="background:#fd7e14"></span><span class="legend-label">Ag. Pgto</span></div>
+          <div class="legend-row"><span class="legend-dot" style="background:#dc3545"></span><span class="legend-label">Bloqueado</span></div>
+          <div class="legend-row"><span class="legend-dot" style="background:#28a745"></span><span class="legend-label">Confirmada</span></div>
+        </div>
+        <div class="filtroact">
+          <p>Período:</p>
+          <div class="date-range-badge" title="Alterar período" (click)="router.navigate(['/motor'])">
+            <i class="bi bi-calendar-range"></i>
+            <span>{{ formattedDateRange.start }}</span>
+            <i class="bi bi-arrow-right"></i>
+            <span>{{ formattedDateRange.end }}</span>
+          </div>
+        </div>
+        
+        <div class="filtroact">
+          <p>Filtro:</p>
+          <select class="tipo-filtro-select" [(ngModel)]="tipoFiltro" title="Filtrar por tipo de quarto">
+            <option value="">Todos os tipos</option>
+            <option *ngFor="let tipo of tiposDisponiveis" [value]="tipo">{{ tipo }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="search-hospede">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" class="form-control" placeholder="Buscar hóspede..." [(ngModel)]="searchTerm" />
+          <button *ngIf="searchTerm" class="btn btn-outline-secondary" type="button" (click)="searchTerm = ''">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="btn btn-primary botoesAct" title="Atualizar dados" (click)="handleRefresh()">
+          <i class="bi bi-arrow-repeat"> Atualizar</i>
+        </div>
+        <div class="btn btn-outline-primary botoesAct" title="Add Tarifa" (click)="openConfirmModal(content5, 1)">
+          <i class="bi bi-coin"> Add Tarifa</i>
+        </div>
+        <div class="btn btn-outline-primary botoesAct" title="Add Tarifa" (click)="openConfirmModal(content5, 3)">
+          <i class="bi bi-unlock2"> Bloquear</i>
+        </div>
+        <div class="btn btn-success botoesAct" title="Criar Reserva" (click)="openConfirmModal(content5, 2)">
+          <i class="bi bi-plus"> Criar Reserva</i>
+        </div>
+      </div>
+    </div>
+
     <div grid-header-right>
       <div class="datesHeader">
         <div *ngFor="let day of allDates" class="calendarioBox headerCell">
@@ -11,25 +67,14 @@
     </div>
 
     <div grid-rows class="rows">
-          <ng-container *ngFor="let quarto of groupedByQuarto ; let i = index">
+          <ng-container *ngFor="let quarto of filteredGroupedByQuarto ; let i = index">
             <div class="room-row-right" >
-              
-              <app-quartoreserva [collapsed]="!isCollapsed(quarto.id)" [dados]="quarto" [dates]="allDates" (refresh)="handleRefresh()"></app-quartoreserva>
+
+              <app-quartoreserva [collapsed]="!isCollapsed(quarto.id)" [dados]="quarto" [dates]="allDates" (refresh)="handleRefresh()" [searchTerm]="searchTerm"></app-quartoreserva>
             </div>
           </ng-container>
     </div>
   </app-reusable-grid>
-  <div class="butao">
-    <div class="btn btn-primary b1" title="Atualizar dados" (click)="handleRefresh()">
-      <i class="bi bi-arrow-repeat" > Atualizar</i>
-    </div>
-    <div class="btn btn-outline-primary b2" title="Atualizar dados" (click)="openConfirmModal(content5, 1)">
-      <i class="bi bi-coin" > Add Tarifa</i>
-    </div>
-    <div class="btn btn-success b3" title="Atualizar dados" (click)="openConfirmModal(content5, 2)">
-      <i class="bi bi-plus" > Criar Reserva</i>
-    </div>
-  </div>
 </div>
 
 
@@ -79,8 +124,6 @@
             </div>
           </div>
           <div *ngIf="mostraTudo && idModal == 2">
-          
-            
             <div class="mb-3">
                 <label for="status" class="form-label">Reserva</label>
                 <select class="form-select" [(ngModel)]="addReservaStatus" (ngModelChange)="trataStatus()" name="status">
@@ -115,10 +158,16 @@
                 Late Checkout
               </label>
             </div>
-
-            
           </div>
-            
+          <div *ngIf="mostraTudo && idModal == 3">
+            <div class="mb-3">
+                <label for="status" class="form-label">Reserva</label>
+                <select class="form-select" [(ngModel)]="addReservaStatus" (ngModelChange)="trataStatus()" name="status">
+                  <option value="undefined" >Selecione o Status:</option>
+                  <option value="4" selected>Bloqueado</option>
+                </select>
+              </div>
+          </div>
       </form>
     </div>
     <div class="modal-footer">

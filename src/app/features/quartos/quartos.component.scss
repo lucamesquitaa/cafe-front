@@ -174,11 +174,49 @@
     align-items: flex-end;
     gap: 8px;
 }
-.quarto-type{
-    padding: 5px;
-    margin: 5px;
+.quarto-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.quarto-type {
+    padding: 3px 8px;
     background-color: #c5ffd3;
     border-radius: 5px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #1a6b3c;
+}
+
+.quarto-beds-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.bed-tag {
+    padding: 3px 8px;
+    background-color: #e8f0fe;
+    border-radius: 5px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #1a3c8b;
+}
+
+.quarto-extra-row {
+    margin-top: 4px;
+}
+
+.extra-tag {
+    padding: 3px 8px;
+    background-color: #fff3cd;
+    border-radius: 5px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #7d5a00;
 }
 .quarto-number {
     position: absolute;
@@ -323,8 +361,8 @@
 
 .buttonFlutua2{
     position: fixed;
-    bottom: 30px;
-    right: 250px;
+    bottom: 25px;
+    right: 400px;
     padding: 18px 24px;
     border-radius: 50px;
     font-weight: 600;
@@ -341,6 +379,13 @@
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 8px 24px rgba(0,0,0,.2);
     background: #f8f9fa;
+}
+
+.buttonFlutua3{
+    position: fixed;
+    bottom: 25px;
+    right: 200px;
+    z-index: 1000;
 }
 
 .empty-state{

@@ -124,21 +124,9 @@ export class CadastroQuartoComponent extends ComponentBase implements OnInit {
             this.errorList.push('O campo Nome do quarto é obrigatório.');
         }
         
-        // Valida description 
-        if (!this.itemCadastro?.description || this.itemCadastro.description.trim() === '') { 
-            this.errorList.push('O campo descrição é obrigatório.');
-        }
-        
         // Valida maxOcupation
         if (!this.itemCadastro?.maxOcupation || this.itemCadastro.maxOcupation == 0) { 
             this.errorList.push('O campo ocupação máxima é obrigatório.');
-        }
-        
-        // Valida área
-        if (!this.itemCadastro?.areaSize || this.itemCadastro.description.trim() === '' || this.itemCadastro.areaSize == '0') { 
-            this.errorList.push('O campo área é obrigatório.');
-        }else if(isNaN(Number(this.itemCadastro.areaSize))){
-            this.errorList.push('O campo área deve ser um número válido.');
         }
         
         // Valida Categoria
@@ -158,12 +146,6 @@ export class CadastroQuartoComponent extends ComponentBase implements OnInit {
         if(!this.beds || this.beds?.length === 0){
             this.errorList.push('O campo Tipos de Cama é obrigatório.');
         }
-        
-        // Valida diff 
-        if (!this.itemCadastro?.diff || this.itemCadastro.diff.trim() === '') { 
-            this.errorList.push('O campo Diferenciais é obrigatório.');
-        }
-      
         
         // Retorna true se não houver erros
         if(this.errorList.length === 0)

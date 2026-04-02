@@ -24,6 +24,7 @@ export class QuartoreservaComponent extends ComponentBase implements OnInit, OnD
   @Input() collapsed: boolean = false;
   // dates passed from motor: array of { label, iso }
   @Input() dates: { label: string; iso: string }[] = [];
+  @Input() searchTerm: string = '';
 
   // dynamic alternate classes for row/column coloring
   @Input() altClasses: string[] = ['alt-white', 'alt-blue'];
@@ -379,6 +380,13 @@ export class QuartoreservaComponent extends ComponentBase implements OnInit, OnD
         return false;
       }
       return true;
+    }
+
+    isGuestMatch(iso: string): boolean {
+      if (!this.searchTerm || this.searchTerm.trim() === '') return false;
+      const guestName = this.getGuestNameForDate(iso);
+      if (!guestName) return false;
+      return guestName.toLowerCase().includes(this.searchTerm.toLowerCase().trim());
     }
 
     getGuestNameForDate(date: string): string | null {

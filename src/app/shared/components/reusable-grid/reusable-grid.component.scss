@@ -11,38 +11,50 @@
 
   .grid-right {
     flex: 1;
-    min-width: 0; /* allow inner content to overflow and scroll */
-    height: 100vh; /* enable vertical scrolling context */
+    min-width: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header-actions {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-left: 8px;
+    padding: 8px 16px;
+    background-color: var(--color-bg, white);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    &:empty {
+      display: none;
+    }
   }
 
   .right-scroll {
-    overflow-x: auto; /* single horizontal scrollbar for header + rows */
-    overflow-y: auto; /* allow vertical scrolling */
-    height: 100vh; /* fill grid-right to scroll vertically */
-    /* Firefox scrollbar control (cannot set exact pixel width; only auto/thin/none) */
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: auto;
     scrollbar-width: auto;
   }
 
   .header-right {
-    display: block;
-    position: sticky; /* stick within the grid area */
-    top: var(--fixed-header-top, 0); /* support optional offset */
-    width: 100%; /* clip to grid-right width */
+    position: sticky;
+    top: var(--fixed-header-top, 0);
     z-index: 100;
-    margin-left: 265px;
     background-color: var(--color-bg, white);
     border-bottom: 1px solid rgba(0,0,0,0.06);
     box-sizing: border-box;
-    padding: 6px 0; /* vertical padding only */
-    /* let the parent .right-scroll handle clipping */
   }
 
   .header-inner {
     display: flex;
     gap: 8px;
     align-items: center;
-    padding-left: 0;
-    width: max-content; /* allow horizontal scrolling with rows */
+    margin-left: 265px;
+    width: max-content;
+    padding: 6px 0;
   }
 
   .rows-right {

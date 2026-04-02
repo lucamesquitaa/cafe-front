@@ -1,5 +1,5 @@
 import { Component, inject, Injector, signal } from '@angular/core';
-import { NgbCalendar, NgbDate } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCalendar, NgbDate, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import { ComponentBase } from 'src/app/shared/components/component.base';
 import { HoteisAllModel } from 'src/app/shared/models/hoteisAll.model';
 import { DateRangeService } from 'src/app/shared/services/date-range.service';
@@ -63,30 +63,61 @@ export class ContextoComponent extends ComponentBase{
     this.doGetAllHoteis();
   }
 
+  readonly MAX_DAYS = 367;
+
+  private toJsDate(d: NgbDate): Date {
+    return new Date(Date.UTC(d.year, d.month - 1, d.day));
+  }
+
+  private daysBetween(a: NgbDate, b: NgbDate): number {
+    const msPerDay = 1000 * 60 * 60 * 24;
+    return Math.abs(this.toJsDate(b).getTime() - this.toJsDate(a).getTime()) / msPerDay;
+  }
+
+  isOverLimit(date: NgbDate): boolean {
+    if (this.fromDate && !this.toDate) {
+      return this.daysBetween(this.fromDate, date) > this.MAX_DAYS;
+    }
+    return false;
+  }
+
+  markDisabled = (date: NgbDateStruct) => {
+    if (this.fromDate && !this.toDate) {
+      const ngbDate = NgbDate.from(date)!;
+      return this.daysBetween(this.fromDate, ngbDate) > this.MAX_DAYS;
+    }
+    return false;
+  };
+
   onDateSelection(date: NgbDate) {
       if (!this.fromDate && !this.toDate) {
         this.fromDate = date;
       } else if (this.fromDate && !this.toDate && date.after(this.fromDate)) {
+        if (this.daysBetween(this.fromDate, date) > this.MAX_DAYS) {
+          return;
+        }
         this.toDate = date;
       } else {
         this.toDate = null;
         this.fromDate = date;
       }
-  
+
         // Ensure UTC ISO strings to satisfy PostgreSQL 'timestamptz'
         const toIsoUtc = (d: NgbDate): string => {
           const jsDate = new Date(Date.UTC(d.year, d.month - 1, d.day, 0, 0, 0));
           return jsDate.toISOString();
         };
-  
+
       this.startDate = toIsoUtc(this.fromDate);
       this.endDate = toIsoUtc(this.toDate ?? this.fromDate);
-      
+
     }
 
     isHovered(date: NgbDate) {
 		return (
-			this.fromDate && !this.toDate && this.hoveredDate && date.after(this.fromDate) && date.before(this.hoveredDate)
+			this.fromDate && !this.toDate && this.hoveredDate &&
+			date.after(this.fromDate) && date.before(this.hoveredDate) &&
+			this.daysBetween(this.fromDate, date) <= this.MAX_DAYS
 		);
 	}
 
