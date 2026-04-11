@@ -154,13 +154,21 @@ export class OAuthCallbackComponent implements OnInit {
           
           // Armazena o token do backend se fornecido
           if (response.token) {
-            this.cookieService.set('access_token', response.token, { 
+            this.cookieService.set('access_token', response.token, {
               expires: 7, // 7 dias
               path: '/',
               secure: window.location.protocol === 'https:'
             });
             console.log('✓ Backend token stored');
           }
+
+          // Armazena informações do usuário nos cookies
+          const cookieOptions = { expires: 7, path: '/', secure: window.location.protocol === 'https:' };
+          this.cookieService.set('user_first_name', loginData.FirstName, cookieOptions);
+          this.cookieService.set('user_last_name', loginData.LastName, cookieOptions);
+          this.cookieService.set('user_email', loginData.Email, cookieOptions);
+          this.cookieService.set('user_photo', loginData.Photo, cookieOptions);
+          console.log('✓ User info stored in cookies');
 
           // Redireciona para a URL apropriada
           console.log(`✓ Redirecting to: ${returnUrl}`);

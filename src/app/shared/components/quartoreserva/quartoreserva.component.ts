@@ -148,7 +148,7 @@ export class QuartoreservaComponent extends ComponentBase implements OnInit, OnD
       if(reserva){
         this.updateReserva = {
           reservaId: reserva.id,
-          quartoId: reserva.quartosModelId,
+          quartoId: reserva.roomId,
           reservaStatus: reserva.reservaStatus,
           adults: reserva.adults,
           kids: reserva.kids,

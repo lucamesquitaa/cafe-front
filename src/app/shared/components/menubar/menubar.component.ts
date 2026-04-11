@@ -63,5 +63,21 @@ export class MenubarComponent extends ComponentBase implements OnInit {
           this.router.navigate(['/motor']);
         }
   }
+  logout() {
+    console.log('=== LOGOUT CLICKED ===');
+    // Limpa todos os cookies
+    this.cookieService.deleteAll();
+    // Limpa storage
+    sessionStorage.clear();
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('id_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('nonce');
+    localStorage.removeItem('PKCE_verifier');
+    // Limpa os tokens do OAuth sem redirecionar
+    // Navega para login e AGUARDA o usuário clicar no botão
+    this.router.navigate(["/login"]);
+    console.log('✓ Logout complete, redirected to login page');
+  }
 
 }

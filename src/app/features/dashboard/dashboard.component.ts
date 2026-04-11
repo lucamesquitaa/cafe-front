@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Injector, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ComponentBase } from 'src/app/shared/components/component.base';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,30 +8,29 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent extends ComponentBase implements OnInit {
+
+  hotelId!: string | null;
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router
-  ) {}
+    public override injector: Injector,
+  ) {
+    super(injector);
+  }
 
-  ngOnInit() {
-    // Verifica se há parâmetros OAuth na URL (código, state, etc.)
-    const queryParams = this.route.snapshot.queryParams;
-    
-    if (queryParams['code'] && queryParams['state']) {
-      console.log('🔄 OAuth callback detectado no dashboard, redirecionando para oauth-callback');
-      console.log('Parâmetros OAuth:', queryParams);
+  override ngOnInit() {
+    super.ngOnInit();
+    this.hotelId = this.cookieService.get("selected_hotel_id");
+    if(this.activatedRoute.snapshot.paramMap.get('hotelId')){
+      this.hotelId = this.activatedRoute.snapshot.paramMap.get('hotelId');
+      // ou, para escutar mudanças:
+      this.activatedRoute.paramMap.subscribe(params => {
+        this.hotelId = params.get('hotelId');
       
-      // Redireciona para oauth-callback preservando todos os query params
-      this.router.navigate(['/oauth-callback'], { 
-        queryParams: queryParams,
-        queryParamsHandling: 'preserve'
+        if (this.hotelId) {
+          
+        }
       });
-      
-      return;
     }
-
-    console.log('✅ Dashboard carregado normalmente');
   }
 }

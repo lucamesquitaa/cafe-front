@@ -65,7 +65,7 @@ export interface AddReservaAdd {
 }
 export interface GetReservas {
     id: string
-  quartosModelId: string
+  roomId: string
   quartos: any
   reservaStatus: number
   checkin: string

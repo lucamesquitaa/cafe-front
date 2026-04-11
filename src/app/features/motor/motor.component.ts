@@ -95,19 +95,30 @@ reservas: any[] = [];
 
   override ngOnInit(): void {
     super.ngOnInit();
+    this.hotelId = this.cookieService.get("selected_hotel_id");
+    if(this.activatedRoute.snapshot.paramMap.get('hotelId')){
+      this.hotelId = this.activatedRoute.snapshot.paramMap.get('hotelId');
+      // ou, para escutar mudanças:
+      this.activatedRoute.paramMap.subscribe(params => {
+        this.hotelId = params.get('hotelId');
+    });
 
-    const pending = (() => { try { return sessionStorage.getItem('quarto-refresh-pending'); } catch { return null; } })();
-    if (pending) {
-      try { sessionStorage.removeItem('quarto-refresh-pending'); } catch (_) { /* ignore */ }
-      // Depois de um reload real, navegar para /motor para manter comportamento igual ao F5
-      try { //se já esta dentro de motor, não deve navegar
-        if (this.router.url !== 'motor') {
-          this.router.navigate(['/motor']);
-        }
-      } catch (err) { /* ignore */ }
-      this.cdr.detectChanges();
-    }
-    this.initializeReal();
+    this.dateRangeService.setDateRange(Date.now().toString(), (Date.now() + 30 * 24 * 60 * 60 * 1000).toString());
+  }
+    // }
+    // const pending = (() => { try { return sessionStorage.getItem('quarto-refresh-pending'); } catch { return null; } })();
+    // if (pending) {
+    //   try { sessionStorage.removeItem('quarto-refresh-pending'); } catch (_) { /* ignore */ }
+    //   // Depois de um reload real, navegar para /motor para manter comportamento igual ao F5
+    //   try { //se já esta dentro de motor, não deve navegar
+    //     if (this.router.url !== 'motor') {
+    //       this.router.navigate(['/motor']);
+    //     }
+    //   } catch (err) { /* ignore */ }
+    //   this.cdr.detectChanges();
+    // }
+    // this.initializeReal();
+
   }
 
   initializeReal() {
@@ -117,11 +128,9 @@ reservas: any[] = [];
     }
     this.allDates = this.dateRangeService.getAllDatesBetween();
 
-     this.activatedRoute.paramMap.subscribe(params => {
-      this.hotelId = params.get('hotelId');
-      if(this.hotelId)
-        this.getAllQuartos(this.hotelId);
-    });
+    if(this.hotelId)
+      this.getAllQuartos(this.hotelId);
+  
   }
 
   changeEarlyCheckin() {
@@ -392,7 +401,7 @@ reloadPeriodoDisponibilidade() {
       this.groupedByQuarto = [];
     }
     
-    this.groupedByQuarto = allDisponibilidadeQuartos.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+    this.groupedByQuarto = allDisponibilidadeQuartos.sort((a, b) => a.number - b.number || a.name.localeCompare(b.name, 'pt-BR'));
     // ensure Angular updates the view
     try {
       this.cdr.detectChanges();

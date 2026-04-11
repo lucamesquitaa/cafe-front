@@ -28,16 +28,22 @@ export class QuartosComponent extends ComponentBase implements OnInit {
   }
  override ngOnInit(): void {
     super.ngOnInit();
-    this.hotelId = this.activatedRoute.snapshot.paramMap.get('hotelId');
-    // ou, para escutar mudanças:
-    this.activatedRoute.paramMap.subscribe(params => {
-      this.hotelId = params.get('hotelId');
-
-      if(this.hotelId) {
+    this.hotelId = this.cookieService.get("selected_hotel_id");
+    console.log(this.hotelId);
+    if(this.activatedRoute.snapshot.paramMap.get('hotelId')){
+      this.hotelId = this.activatedRoute.snapshot.paramMap.get('hotelId');
+      // ou, para escutar mudanças:
+      this.activatedRoute.paramMap.subscribe(params => {
+        this.hotelId = params.get('hotelId');
+      
+       
+       if(this.hotelId) {
         this.getAllQuartos(this.hotelId);
       }
-        
     });
+    }
+    if(this.hotelId) 
+      this.getAllQuartos(this.hotelId);
   }
   
   getAllQuartos(hotelId: string) {

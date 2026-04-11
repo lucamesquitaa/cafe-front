@@ -1,22 +1,17 @@
 <header class="app-header" *ngIf="this.cookieService.get('access_token') != 'undefined'">
   <div class="header-container">
-    <div class="header-center">
-      <h1 class="app-title">{{ appTitle }}</h1>
-    </div>
-
-
-    <div class="header-right">
-      <div class="dropdown" ngbDropdown placement="bottom-end">
-        <a class="user-info" id="dropdownUser1" ngbDropdownToggle aria-expanded="false">
-          <i class="bi bi-person-circle"></i>
-          <strong>Usuário</strong>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-dark text-small shadow" ngbDropdownMenu aria-labelledby="dropdownUser1">
-          <li><a class="dropdown-item">{{this.cookieService.get("user_first_name") == 'undefined' ? '' : this.cookieService.get("user_first_name")}} {{this.cookieService.get("user_last_name") == 'undefined' ? '' : this.cookieService.get("user_last_name")}}</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" (click)="logout()">Sair</a></li>
-        </ul>
+    <div class="header-left">
+      <div class="hotel-selector" *ngIf="hoteis.length > 0">
+        <i class="bi bi-building"></i>
+        <select [(ngModel)]="hotelSelecionadoId" (ngModelChange)="selecionarHotel($event)" class="hotel-select">
+          <option *ngFor="let hotel of hoteis" [value]="hotel.id">{{ hotel.name }}</option>
+        </select>
       </div>
     </div>
-  </div>
+<!-- 
+    <div class="header-center">
+      <h1 class="app-title">{{ appTitle }}</h1>
+    </div> -->
+
+    </div>
 </header>

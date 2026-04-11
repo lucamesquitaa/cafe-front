@@ -61,36 +61,64 @@ export class CadastroComponent extends ComponentBase implements OnInit {
 
   override ngOnInit(): void {
     super.ngOnInit();
-    this.hotelId = this.activatedRoute.snapshot.paramMap.get('hotelId');
-    // ou, para escutar mudanças:
-    this.activatedRoute.paramMap.subscribe(params => {
-      this.hotelId = params.get('hotelId');
-    
-      if (this.hotelId) {
-        this.showLoading();
-        this.imagens = [];
-        this.getAllPhotos(this.hotelId);
-        this.hotelService.doGetHotelByManager(this.hotelId).subscribe({
-          next: (item) => {
-                if (item.data) {
-                  this.itemCadastro = item.data;
-                  // Fazer backup dos valores originais
-                  this.originalItemCadastro = JSON.parse(JSON.stringify(item.data));
-                  this.parseLobby(item.data.lobby);
+    this.hotelId = this.cookieService.get("selected_hotel_id");
+    if(this.activatedRoute.snapshot.paramMap.get('hotelId')){
+      this.hotelId = this.activatedRoute.snapshot.paramMap.get('hotelId');
+      // ou, para escutar mudanças:
+      this.activatedRoute.paramMap.subscribe(params => {
+        this.hotelId = params.get('hotelId');
+      
+        if (this.hotelId) {
+          this.showLoading();
+          this.imagens = [];
+          this.getAllPhotos(this.hotelId);
+          this.hotelService.doGetHotelByManager(this.hotelId).subscribe({
+            next: (item) => {
+                  if (item.data) {
+                    this.itemCadastro = item.data;
+                    // Fazer backup dos valores originais
+                    this.originalItemCadastro = JSON.parse(JSON.stringify(item.data));
+                    this.parseLobby(item.data.lobby);
+                  }
+                  console.log("item cadastro:");
+                  console.log(item);
+                },
+                error: (err) => {
+                  console.error('Erro ao buscar coordenadas:', err);
+                  this.hideLoading();
+                },
+                complete: () => {
+                  this.hideLoading();
                 }
-                console.log("item cadastro:");
-                console.log(item);
-              },
-              error: (err) => {
-                console.error('Erro ao buscar coordenadas:', err);
-                this.hideLoading();
-              },
-              complete: () => {
-                this.hideLoading();
-              }
-            });
-      }
-    });
+              });
+        }
+      });
+    }else{
+      if (this.hotelId) {
+          this.showLoading();
+          this.imagens = [];
+          this.getAllPhotos(this.hotelId);
+          this.hotelService.doGetHotelByManager(this.hotelId).subscribe({
+            next: (item) => {
+                  if (item.data) {
+                    this.itemCadastro = item.data;
+                    // Fazer backup dos valores originais
+                    this.originalItemCadastro = JSON.parse(JSON.stringify(item.data));
+                    this.parseLobby(item.data.lobby);
+                  }
+                  console.log("item cadastro:");
+                  console.log(item);
+                },
+                error: (err) => {
+                  console.error('Erro ao buscar coordenadas:', err);
+                  this.hideLoading();
+                },
+                complete: () => {
+                  this.hideLoading();
+                }
+              });
+        }
+    }
   }
 
   parseLobby(lobby: string) {

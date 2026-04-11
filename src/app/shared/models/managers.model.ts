@@ -1,4 +1,4 @@
 export interface ManagersModel{
-  email: string;
+  userModelEmail: string;
   role: string;
 }
