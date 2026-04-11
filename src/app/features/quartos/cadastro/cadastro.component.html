@@ -5,6 +5,9 @@
     <!-- Stepper Compacto Universal Melhorado -->
     <div class="stepper-enhanced">
       <div class="stepper-header">
+        <div class="p-0 me-2 botaovoltar" [routerLink]="['/quartos', hotelId]" title="Voltar para listagem">
+          <i class="bi bi-arrow-left-circle fs-5"></i>
+        </div>
         <h3 class="stepper-title">Cadastro do Quarto</h3>
         <div class="step-counter">
           <span class="current">{{ currentStep }}</span>

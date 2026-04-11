@@ -6,12 +6,13 @@ import { ResponseApi } from '../models/response.api';
 import { ServiceGeneric } from './generic.service';
 import { AddDisponibilidadeAdd, DisponiModel, UopdateDisponibilidadeDay } from '../models/reserva.model';
 import { HttpHeaders } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DisponibilidadeService extends ServiceGeneric<ResponseApi<any>> {
-  override urlServiceREST: string = "https://api.turify.com.br/api/MotorDeReservas/";
+  override urlServiceREST: string = environment.apiBaseUrl + "/api/MotorDeReservas/";
 
   constructor(public override injector: Injector) {
     super(injector);

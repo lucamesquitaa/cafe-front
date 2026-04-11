@@ -29,6 +29,7 @@ export interface QuartoDisponibilidade {
     id: string
     name: string
     number: number
+    categoryName?: string
   disponiQuarto?: (DisponiModel[] & { target?: number })
   reservas?: GetReservas[]
 }
@@ -64,7 +65,7 @@ export interface AddReservaAdd {
 }
 export interface GetReservas {
     id: string
-  quartosModelId: string
+  roomId: string
   quartos: any
   reservaStatus: number
   checkin: string

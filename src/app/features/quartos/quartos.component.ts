@@ -28,16 +28,22 @@ export class QuartosComponent extends ComponentBase implements OnInit {
   }
  override ngOnInit(): void {
     super.ngOnInit();
-    this.hotelId = this.activatedRoute.snapshot.paramMap.get('hotelId');
-    // ou, para escutar mudanças:
-    this.activatedRoute.paramMap.subscribe(params => {
-      this.hotelId = params.get('hotelId');
-
-      if(this.hotelId) {
+    this.hotelId = this.cookieService.get("selected_hotel_id");
+    console.log(this.hotelId);
+    if(this.activatedRoute.snapshot.paramMap.get('hotelId')){
+      this.hotelId = this.activatedRoute.snapshot.paramMap.get('hotelId');
+      // ou, para escutar mudanças:
+      this.activatedRoute.paramMap.subscribe(params => {
+        this.hotelId = params.get('hotelId');
+      
+       
+       if(this.hotelId) {
         this.getAllQuartos(this.hotelId);
       }
-        
     });
+    }
+    if(this.hotelId) 
+      this.getAllQuartos(this.hotelId);
   }
   
   getAllQuartos(hotelId: string) {
@@ -105,7 +111,7 @@ export class QuartosComponent extends ComponentBase implements OnInit {
     }
 
     this.showLoading();
-    this.quartosService.doDeleteQuarto(this.hotelId, quartoId).subscribe({
+    this.quartosService.doDeleteQuarto(quartoId, this.hotelId!).subscribe({
       next: (response: ResponseApi) => {
         if (response.sucesso || response.success) {
           this.toastr.success('Quarto excluído com sucesso.');
@@ -122,6 +128,11 @@ export class QuartosComponent extends ComponentBase implements OnInit {
         this.hideLoading();
       }
     });
+  }
+
+  bedLabel(bedType: number): string {
+    const labels: Record<number, string> = { 1: 'Solteiro', 2: 'Beliche', 3: 'Casal', 4: 'Queen', 5: 'King', 6: 'Berço' };
+    return labels[bedType] ?? `Tipo ${bedType}`;
   }
 
   onAddQuarto() {

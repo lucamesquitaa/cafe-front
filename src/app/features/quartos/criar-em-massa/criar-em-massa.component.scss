@@ -1,0 +1,37 @@
+.btn-criar-massa {
+  padding: 18px 24px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  border: 2px solid #6c757d;
+  color: #495057;
+  background: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.btn-criar-massa:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  background: #f8f9fa;
+}
+
+.massa-panel {
+  position: fixed;
+  bottom: 90px;
+  right: 470px;
+  width: 340px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  z-index: 1001;
+  border: 1px solid #e9ecef;
+}
+
+.massa-panel h5 {
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 16px;
+  font-size: 1rem;
+}

@@ -141,7 +141,19 @@
     visibility: hidden;
     transition: all 0.3s ease;
 }
+.setinha{
+    margin-left: 50px;
+}
+.divisoria{
+    margin-top: 100px;
+    margin-bottom: 10px;
+}
 
+.logout-buttom {
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid #4a5568;
+}
 .menu-overlay.active{
     opacity: 1;
     visibility: visible;
@@ -170,5 +182,95 @@
     
     .menu-overlay{
         display: none;
+    }
+}
+/* Estilos para o dropdown do usuário */
+.dropdown {
+    position: relative;
+    width: 100%;
+    margin-top: 0px;
+}
+
+.dropdown-toggle {
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    width: 100%;
+    text-align: left;
+}
+
+.dropdown-menu {
+    position: absolute !important;
+    top: auto !important;
+    bottom: 100% !important;
+    left: auto !important;
+    right: 0 !important;
+    transform: translateY(5px) !important;
+    min-width: 200px;
+    max-width: 250px;
+    width: calc(100% - 20px);
+    margin: 0 10px;
+    z-index: 1050;
+    border: 1px solid rgba(59, 59, 59, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-menu.show {
+    display: block !important;
+}
+
+.dropdown-item {
+    padding: 10px 16px;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    margin: 2px 6px;
+    
+}
+.dropdown-item:hover {
+    background: #9c9c9c !important;
+    width: calc(100% - 22px);
+}
+
+.dropdown-divider {
+    margin: 8px 0;
+    border-color: #fffdfd ;
+}
+.user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: white;
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: background-color 0.2s;
+      
+      i {
+        font-size: 1.5rem;
+      }
+      
+      .user-name {
+        font-weight: 500;
+      }
+    }
+
+/* Responsividade para o dropdown em mobile */
+@media (max-width: 768px) {
+    .dropdown-menu {
+        position: fixed !important;
+        bottom: 60px !important;
+        left: 20px !important;
+        right: 20px !important;
+        top: auto !important;
+        transform: none !important;
+        width: calc(100% - 40px);
+        max-width: none;
+        margin: 0;
+    }
+    
+    .dropdown-toggle {
+        padding: 8px 12px;
     }
 }

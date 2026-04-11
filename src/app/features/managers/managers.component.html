@@ -47,7 +47,7 @@
             <div class="managers-list" *ngIf="managers && managers.length > 0">
                 <div class="manager-item" *ngFor="let manager of managers">
                     <div class="manager-info">
-                        <div class="manager-email">{{ manager.email }}</div>
+                        <div class="manager-email">{{ manager.userModelEmail }}</div>
                         <div class="manager-role" [attr.data-role]="manager.role.toLowerCase()">
                             {{ getRoleDisplayName(manager.role) }}
                         </div>
@@ -56,7 +56,7 @@
                     *ngIf="manager.role.toLowerCase() !== 'admin'"
                         class="btn btn-outline-danger btn-sm" 
                         title="Remover permissão"
-                        (click)="removeManager(manager.email)"
+                        (click)="removeManager(manager.userModelEmail)"
                     >
                         <i class="bi bi-trash"></i>
                     </button>

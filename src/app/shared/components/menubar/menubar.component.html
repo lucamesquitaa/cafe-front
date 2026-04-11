@@ -33,19 +33,17 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="/admin" class="nav-link text-white d-flex justify-content-between align-items-center" [class.active]="selected === 'admin'" routerLinkActive="active">
-                    <span>
-                        <i class="bi bi-building"></i>
-                        Hotéis
-                    </span>
-                    <!-- <i class="bi" [class.bi-chevron-down]="!isHoteisMenuOpen" [class.bi-chevron-up]="isHoteisMenuOpen"></i> -->
-                </a>
-                <!-- <div [ngbCollapse]="!isHoteisMenuOpen" id="hoteisSubmenu">
+            <a href="javascript:void(0)" class="nav-link text-white d-flex align-items-center" [class.active]="selected === 'admin'" (click)="toggleHoteisMenu()">
+                <i class="bi bi-building"></i>
+               Hotel
+               <i class="bi setinha" [class.bi-chevron-down]="!isHoteisMenuOpen" [class.bi-chevron-up]="isHoteisMenuOpen" ></i>
+            </a>
+                <div [ngbCollapse]="!isHoteisMenuOpen" id="hoteisSubmenu">
                     <ul class="nav nav-pills flex-column ms-3">
                         <li class="nav-item">
                             <a href="/cadastro" class="nav-link text-white" routerLinkActive="active">
                                 <i class="bi bi-pencil"></i>
-                                Cadastro
+                                Editar
                             </a>
                         </li>
                         <li class="nav-item">
@@ -61,7 +59,7 @@
                             </a>
                         </li>
                     </ul>
-                </div> -->
+                </div>
             </li>
             <li class="nav-item" (click)="motor()">
                 <a  class="nav-link text-white" routerLinkActive="active" [class.active]="selected === 'motor'">
@@ -69,13 +67,35 @@
                                 Motor Reservas
                 </a>
             </li>
-            <li class="nav-item" >
-                <a href="/campos" class="nav-link text-white" routerLinkActive="active" [class.active]="selected === 'campos'">
-                                <i class="bi bi-pencil"></i>
-                                Campos
+
+            <div class="divisoria">
+                ____________________________________
+            </div>
+            <li class="nav-item">
+                <a href="/admin" class="nav-link text-white d-flex justify-content-between align-items-center" [class.active]="selected === 'admin'" routerLinkActive="active">
+                    <span>
+                        <i class="bi bi-building"></i>
+                        Todos Hotéis
+                    </span>
                 </a>
             </li>
+            <div>
+                ____________________________________
+            </div>
         </ul>
+        <div class="logout-buttom">
+            <div class="dropdown" ngbDropdown placement="top-end">
+                <a class="user-info" id="dropdownUser1" ngbDropdownToggle aria-expanded="false">
+                <i class="bi bi-person-circle"></i>
+                <strong>Usuário</strong>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark text-small shadow" ngbDropdownMenu aria-labelledby="dropdownUser1">
+                <li><a class="dropdown-item">{{this.cookieService.get("user_first_name") == 'undefined' ? '' : this.cookieService.get("user_first_name")}} {{this.cookieService.get("user_last_name") == 'undefined' ? '' : this.cookieService.get("user_last_name")}}</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" (click)="logout()">Sair</a></li>
+                </ul>
+            </div>
+        </div>
         
     </div>
 </div>

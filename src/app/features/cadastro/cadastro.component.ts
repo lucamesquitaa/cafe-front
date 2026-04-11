@@ -30,6 +30,11 @@ export class CadastroComponent extends ComponentBase implements OnInit {
  private modalService = inject(NgbModal);
   errorList: string[] = [];
   
+  lobbyStartHour: number | null = null;
+  lobbyStartPeriod: string = 'AM';
+  lobbyEndHour: number | null = null;
+  lobbyEndPeriod: string = 'PM';
+
   // Armazena o estado de conclusão de cada step
   completedSteps: Set<number> = new Set<number>();
 
@@ -56,35 +61,81 @@ export class CadastroComponent extends ComponentBase implements OnInit {
 
   override ngOnInit(): void {
     super.ngOnInit();
-    this.hotelId = this.activatedRoute.snapshot.paramMap.get('hotelId');
-    // ou, para escutar mudanças:
-    this.activatedRoute.paramMap.subscribe(params => {
-      this.hotelId = params.get('hotelId');
-    
-      if (this.hotelId) {
-        this.showLoading();
-        this.imagens = [];
-        this.getAllPhotos(this.hotelId);
-        this.hotelService.doGetHotelByManager(this.hotelId).subscribe({
-          next: (item) => {
-                if (item.data) {
-                  this.itemCadastro = item.data;
-                  // Fazer backup dos valores originais
-                  this.originalItemCadastro = JSON.parse(JSON.stringify(item.data));
+    this.hotelId = this.cookieService.get("selected_hotel_id");
+    if(this.activatedRoute.snapshot.paramMap.get('hotelId')){
+      this.hotelId = this.activatedRoute.snapshot.paramMap.get('hotelId');
+      // ou, para escutar mudanças:
+      this.activatedRoute.paramMap.subscribe(params => {
+        this.hotelId = params.get('hotelId');
+      
+        if (this.hotelId) {
+          this.showLoading();
+          this.imagens = [];
+          this.getAllPhotos(this.hotelId);
+          this.hotelService.doGetHotelByManager(this.hotelId).subscribe({
+            next: (item) => {
+                  if (item.data) {
+                    this.itemCadastro = item.data;
+                    // Fazer backup dos valores originais
+                    this.originalItemCadastro = JSON.parse(JSON.stringify(item.data));
+                    this.parseLobby(item.data.lobby);
+                  }
+                  console.log("item cadastro:");
+                  console.log(item);
+                },
+                error: (err) => {
+                  console.error('Erro ao buscar coordenadas:', err);
+                  this.hideLoading();
+                },
+                complete: () => {
+                  this.hideLoading();
                 }
-                console.log("item cadastro:");
-                console.log(item);
-              },
-              error: (err) => {
-                console.error('Erro ao buscar coordenadas:', err);
-                this.hideLoading();
-              },
-              complete: () => {
-                this.hideLoading();
-              }
-            });
+              });
+        }
+      });
+    }else{
+      if (this.hotelId) {
+          this.showLoading();
+          this.imagens = [];
+          this.getAllPhotos(this.hotelId);
+          this.hotelService.doGetHotelByManager(this.hotelId).subscribe({
+            next: (item) => {
+                  if (item.data) {
+                    this.itemCadastro = item.data;
+                    // Fazer backup dos valores originais
+                    this.originalItemCadastro = JSON.parse(JSON.stringify(item.data));
+                    this.parseLobby(item.data.lobby);
+                  }
+                  console.log("item cadastro:");
+                  console.log(item);
+                },
+                error: (err) => {
+                  console.error('Erro ao buscar coordenadas:', err);
+                  this.hideLoading();
+                },
+                complete: () => {
+                  this.hideLoading();
+                }
+              });
+        }
+    }
+  }
+
+  parseLobby(lobby: string) {
+    if (!lobby) return;
+    const parts = lobby.split(' - ');
+    if (parts.length === 2) {
+      const startParts = parts[0].trim().split(' ');
+      const endParts = parts[1].trim().split(' ');
+      if (startParts.length >= 2) {
+        this.lobbyStartHour = parseInt(startParts[0]) || null;
+        this.lobbyStartPeriod = startParts[1] || 'AM';
       }
-    });
+      if (endParts.length >= 2) {
+        this.lobbyEndHour = parseInt(endParts[0]) || null;
+        this.lobbyEndPeriod = endParts[1] || 'PM';
+      }
+    }
   }
 
   onchangeURL()
@@ -204,8 +255,8 @@ export class CadastroComponent extends ComponentBase implements OnInit {
             this.errorList.push('O campo Descrição é obrigatório.');
         } 
         // Valida Lobby
-        if(!this.itemCadastro?.lobby || this.itemCadastro.lobby.trim() === ''){
-            this.errorList.push('O campo Lobby é obrigatório.');
+        if(!this.lobbyStartHour || !this.lobbyEndHour){
+            this.errorList.push('O campo Horário do Lobby é obrigatório.');
         }
         // Valida Diferenciais
         if(!this.itemCadastro?.diff || this.itemCadastro.diff.trim() === ''){
@@ -348,6 +399,9 @@ export class CadastroComponent extends ComponentBase implements OnInit {
       return;
     }
     
+    // Combina os campos do lobby em uma string
+    this.itemCadastro.lobby = `${this.lobbyStartHour} ${this.lobbyStartPeriod} - ${this.lobbyEndHour} ${this.lobbyEndPeriod}`;
+
     //os itens booleanos devem ser convertidos de string para boolean, preservando valores originais
     this.itemCadastro.child = this.convertToBoolean(this.itemCadastro.child, this.originalItemCadastro.child);
     this.itemCadastro.pets = this.convertToBoolean(this.itemCadastro.pets, this.originalItemCadastro.pets);
@@ -384,7 +438,9 @@ export class CadastroComponent extends ComponentBase implements OnInit {
         this.hideLoading();
       },
       complete: () => {
-        this.hideLoading();
+        if (!this.imagensNew || this.imagensNew.length === 0) {
+          this.hideLoading();
+        }
       }
     });
   }

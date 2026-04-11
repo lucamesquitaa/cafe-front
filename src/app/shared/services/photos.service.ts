@@ -1,13 +1,13 @@
 import { Injectable, Injector } from '@angular/core';
 import { ServiceGeneric } from './generic.service';
 import { ResponseApi } from '../models/response.api';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PhotosService extends ServiceGeneric<ResponseApi<any>> {
-  //override urlServiceREST: string = "https://hotelaria-vstudio2022-54700728866.us-central1.run.app/api/Hotel";
-  override urlServiceREST: string = "https://api.turify.com.br/api/Photos/";
+  override urlServiceREST: string = environment.apiBaseUrl + "/api/Photos/";
 
   constructor(public override injector: Injector) {
     super(injector);

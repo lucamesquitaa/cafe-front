@@ -12,17 +12,31 @@
     <div class="quartos-grid" *ngIf="allQuartos && allQuartos.length > 0;">
         <div *ngFor="let quarto of allQuartos; let i = index" class="quarto-card-compact">
             <div class="card-left">
-                <div class="quarto-number">#{{ (i + 1).toString().padStart(3, '0') }}</div>
+                <div class="quarto-number">#{{ quarto.numero }}</div>
                 <img [src]="quarto.photos && quarto.photos.length > 0 ? quarto.photos[0] : 'assets/hotel-free.jpg'" 
                      class="quarto-img" 
                      [alt]="quarto.name"/> 
             </div>
             <div class="card-center">
                 <h4 class="quarto-title">{{ quarto.name }}</h4>
-                <span class="quarto-type" *ngFor="let item of (quarto.category || [])">{{ item.name }}</span>
+                <div class="quarto-tags-row">
+                    <span class="quarto-type" *ngFor="let item of (quarto.category || [])">
+                        <i class="bi bi-tag"></i> {{ item.name }}
+                    </span>
+                </div>
                 <div class="quarto-specs">
                     <span class="spec-item"><i class="bi bi-people"></i> {{ quarto.maxOcupation }} pessoas</span>
                     <span class="spec-item"><i class="bi bi-bounding-box-circles"></i> {{ quarto.areaSize }} m²</span>
+                </div>
+                <div class="quarto-beds-row" *ngIf="quarto.beds && quarto.beds.length > 0">
+                    <span class="bed-tag" *ngFor="let bed of quarto.beds">
+                        <i class="bi bi-moon-fill"></i> {{ bed.quantity }}x {{ bedLabel(bed.bedType) }}
+                    </span>
+                </div>
+                <div class="quarto-extra-row">
+                    <span class="extra-tag" *ngIf="quarto.category && quarto.category[0]?.aceitaCamaExtra">
+                        <i class="bi bi-plus-circle"></i> Aceita Cama Extra
+                    </span>
                 </div>
             </div>
             <div class="card-right">
@@ -47,12 +61,27 @@
 </div>
 
 <!-- Botão flutuante para adicionar novo quarto -->
-<button class="btn btn-primary buttonFlutua" 
-        (click)="onAddQuarto()" 
+<button class="btn btn-primary buttonFlutua"
+        (click)="onAddQuarto()"
         *ngIf="allQuartos && allQuartos.length >= 0"
         title="Adicionar novo quarto">
-    <i class="bi bi-plus-circle"></i> Adicionar Quarto
+    <i class="bi bi-plus-circle"></i> Criar Quarto
 </button>
+
+<!-- Criar em Massa -->
+<div class="buttonFlutua3" *ngIf="hotelId">
+    <app-criar-em-massa [hotelId]="hotelId!" (quartosCriados)="getAllQuartos(hotelId!)"></app-criar-em-massa>
+</div>
+
+<!-- Botão flutuante para gerenciar tipos -->
+<button class="btn btn-outline-secondary buttonFlutua2"
+        (click)="router.navigate(['/quartos/tipos', hotelId])"
+        *ngIf="hotelId"
+        title="Gerenciar tipos de quarto">
+    <i class="bi bi-tags"></i> Tipos
+</button>
+
+
 
 <!-- Loading indicator -->
 <div *ngIf="loading" class="loading-overlay">

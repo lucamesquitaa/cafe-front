@@ -5,13 +5,13 @@ import { Observable } from 'rxjs';
 import { LoginModel, LoginResponseModel, ResultLoginModel } from '../models/login.model';
 import { ManagersModel } from '../models/managers.model';
 import { ResponseApi } from '../models/response.api';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService extends ServiceGeneric<LoginResponseModel> {
-  //override urlServiceREST: string = "https://hotelaria-vstudio2022-54700728866.us-central1.run.app/api/Login";
-   override urlServiceREST: string = "https://api.turify.com.br/api/User";
+  override urlServiceREST: string = environment.apiBaseUrl + "/api/User";
 
   constructor(public override injector: Injector) {
     super(injector);

@@ -24,6 +24,7 @@ export class QuartoreservaComponent extends ComponentBase implements OnInit, OnD
   @Input() collapsed: boolean = false;
   // dates passed from motor: array of { label, iso }
   @Input() dates: { label: string; iso: string }[] = [];
+  @Input() searchTerm: string = '';
 
   // dynamic alternate classes for row/column coloring
   @Input() altClasses: string[] = ['alt-white', 'alt-blue'];
@@ -147,7 +148,7 @@ export class QuartoreservaComponent extends ComponentBase implements OnInit, OnD
       if(reserva){
         this.updateReserva = {
           reservaId: reserva.id,
-          quartoId: reserva.quartosModelId,
+          quartoId: reserva.roomId,
           reservaStatus: reserva.reservaStatus,
           adults: reserva.adults,
           kids: reserva.kids,
@@ -365,6 +366,29 @@ export class QuartoreservaComponent extends ComponentBase implements OnInit, OnD
     }
 
     // Método para obter o nome do hóspede principal para uma data específica
+    isFirstCellBarDay(iso: string): boolean {
+      const reserva = this.getReservaForDate(iso);
+      if (!reserva) return false;
+
+      const idx = this.dates.findIndex(d => d.iso === iso);
+      if (idx <= 0) return true;
+
+      const prevDay = this.dates[idx - 1];
+      const prevReserva = this.getReservaForDate(prevDay.iso);
+      // Se o dia anterior é da mesma reserva e não é split-bar, este não é o primeiro
+      if (prevReserva && (prevReserva as any).id === (reserva as any).id && !this.shouldShowSplitBar(prevDay.iso)) {
+        return false;
+      }
+      return true;
+    }
+
+    isGuestMatch(iso: string): boolean {
+      if (!this.searchTerm || this.searchTerm.trim() === '') return false;
+      const guestName = this.getGuestNameForDate(iso);
+      if (!guestName) return false;
+      return guestName.toLowerCase().includes(this.searchTerm.toLowerCase().trim());
+    }
+
     getGuestNameForDate(date: string): string | null {
       // Procura por uma reserva que inclua esta data
       const reserva = this.dados?.reservas?.find(r => 

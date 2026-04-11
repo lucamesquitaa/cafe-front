@@ -7,6 +7,7 @@ import { catchError } from 'rxjs/operators';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -21,7 +22,7 @@ export class AuthInterceptor implements HttpInterceptor {
         const token = this.getValidToken();
         
         // Se não há token válido e a requisição é para uma URL que precisa de autenticação
-        if (!token && this.requiresAuth(req.url)) {
+        if (!token && this.requiresAuth(req.url) && !environment.devBypass) {
             this.toastr.warning('Você precisa fazer login para acessar esta funcionalidade.', 'Login Necessário');
             this.router.navigate(['/login']);
             return throwError(new HttpErrorResponse({ status: 401, statusText: 'No token available' }));
@@ -44,20 +45,25 @@ export class AuthInterceptor implements HttpInterceptor {
     private getValidToken(): string | null {
         // Primeiro verifica no cookie
         let token = this.cookieService.get('access_token');
-        
+
         // Se não encontrou no cookie, verifica no sessionStorage
         if (!token) {
             token = sessionStorage.getItem('access_token') || sessionStorage.getItem('id_token') || '';
         }
-        
-        // Verifica se o token expirou
-        if (token && this.isTokenExpired()) {
+
+        // Em modo dev bypass, usa o token do localStorage se existir
+        if (!token && environment.devBypass) {
+            token = localStorage.getItem('dev_access_token') || '';
+        }
+
+        // Verifica se o token expirou (ignora em modo dev bypass)
+        if (token && !environment.devBypass && this.isTokenExpired()) {
             this.clearAllTokens();
             this.toastr.warning('Sua sessão expirou. Faça login novamente.', 'Sessão Expirada');
             this.router.navigate(['/login']);
             return null;
         }
-        
+
         return token || null;
     }
 
@@ -98,21 +104,21 @@ export class AuthInterceptor implements HttpInterceptor {
 
     private handleAuthError(error: HttpErrorResponse): Observable<never> {
         // Verificar se é erro 401 (não autorizado) ou token expirado
-        if (error.status === 401 || 
+        if (!environment.devBypass && (error.status === 401 ||
             error.error?.message?.toLowerCase().includes('token expired') ||
             error.error?.message?.toLowerCase().includes('token expirado') ||
-            error.error?.message?.toLowerCase().includes('unauthorized')) {
-            
+            error.error?.message?.toLowerCase().includes('unauthorized'))) {
+
             // Limpar todos os tokens
             this.clearAllTokens();
-            
+
             // Mostrar mensagem para o usuário
             this.toastr.warning('Sua sessão expirou. Faça login novamente.', 'Sessão Expirada');
-            
+
             // Redirecionar para a página de login
             this.router.navigate(['/login']);
         }
-        
+
         return throwError(error);
     }
 }

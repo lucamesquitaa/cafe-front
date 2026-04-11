@@ -1,0 +1,69 @@
+<div class="tiposContainer page-with-menubar" [class.menu-collapsed]="!(menubarService.isOpen$ | async)">
+
+  <!-- Cabeçalho -->
+  <div class="tipos-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div>
+        <h2><i class="bi bi-tags"></i> Tipos de Quarto</h2>
+        <p>
+          Gerencie os tipos cadastrados
+          <span *ngIf="allTipos.length > 0">({{ allTipos.length }} tipo{{ allTipos.length !== 1 ? 's' : '' }})</span>
+        </p>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary btn-sm" (click)="router.navigate(['/quartos', hotelId])">
+          <i class="bi bi-arrow-left"></i> Voltar
+        </button>
+        <button class="btn btn-primary btn-sm" (click)="openCadastroModal()">
+          <i class="bi bi-plus-circle"></i> Novo Tipo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Tipos -->
+  <div class="tipos-grid" *ngIf="allTipos.length > 0; else emptyState">
+    <div *ngFor="let tipo of allTipos" class="tipo-card">
+      <div class="tipo-card-body">
+        <div class="tipo-name">{{ tipo.name }}</div>
+        <div class="tipo-meta">
+          <span >Configuração padrão: </span>
+          <span *ngIf="tipo.maxHospedes" class="badge-meta">
+            <i class="bi bi-people"></i>
+            {{ tipo.minHospedes ? tipo.minHospedes + '–' : '' }}{{ tipo.maxHospedes }} hóspedes
+          </span>
+          <span *ngIf="tipo.aceitaCamaExtra" class="badge-extra">+ cama extra</span>
+          <span *ngIf="tipo.aceitaBerco" class="badge-extra">+ berço</span>
+        </div>
+        <div class="tipo-beds" *ngIf="tipo.configuracaoCamas && tipo.configuracaoCamas.length > 0">
+          <span >Padrão de Camas: </span>
+          <span *ngFor="let c of tipo.configuracaoCamas" class="badge-bed">
+            {{ c.quantity }}x {{ bedLabel(c.bedType) }}
+          </span>
+        </div>
+        <p class="tipo-desc" *ngIf="tipo.descricao">{{ tipo.descricao }}</p>
+      </div>
+      <div class="tipo-actions">
+        <button class="btn btn-sm btn-outline-danger" (click)="onDelete(tipo)" title="Excluir">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="empty-state" *ngIf="!loading">
+      <i class="bi bi-tag" style="font-size:2.5rem; opacity:.4; display:block; margin-bottom:.5rem;"></i>
+      <h3>Nenhum tipo cadastrado</h3>
+      <p>Clique em "Novo Tipo" para começar.</p>
+    </div>
+  </ng-template>
+
+</div>
+
+<!-- Loading -->
+<div *ngIf="loading" class="loading-overlay">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">Carregando...</span>
+  </div>
+</div>

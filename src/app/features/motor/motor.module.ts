@@ -4,7 +4,7 @@ import { CommonModule, JsonPipe } from '@angular/common';
 import { MotorRoutingModule } from './motor-routing.module';
 import { MotorComponent } from './motor.component';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { NgbDatepicker, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDatepicker, NgbDateParserFormatter, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { BrNgbDateParserFormatter } from './br-ngb-date-parser-formatter';
 import { ContextoComponent } from './contexto/contexto.component';
@@ -17,8 +17,10 @@ import { ContextoComponent } from './contexto/contexto.component';
   imports: [
     CommonModule,
     SharedModule,
-    NgbDatepicker, 
-     JsonPipe,
+    NgbDatepicker,
+    NgbTooltipModule,
+    JsonPipe,
+    FormsModule,
     MotorRoutingModule,
   ],
   providers: [

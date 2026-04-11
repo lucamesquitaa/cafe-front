@@ -13,7 +13,10 @@
     flex-wrap: wrap;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
-
+.botaovoltar{
+    cursor: pointer;
+    color: #0056b3;
+}
 .cadastroContainer.page-with-menubar {
     margin-left: 280px;
     width: calc(100% - 280px);

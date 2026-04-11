@@ -1,5 +1,7 @@
-import { Component, Inject, inject, Injector, OnInit, TemplateRef} from '@angular/core';
+import { Component, inject, Injector, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { SelectRemoteComponent } from 'src/app/shared/components/select-remote/select-remote.component';
+import { CadastroTipoQuartoComponent } from '../tipos/cadastro-tipo/cadastro-tipo.component';
 import { ComponentBase } from 'src/app/shared/components/component.base';
 import { QuartosModel, RoomBedDTO } from 'src/app/shared/models/quartos.model';
 import { QuartosService } from 'src/app/shared/services/quartos.service';
@@ -9,6 +11,7 @@ import { CategoryQuartosService } from 'src/app/shared/services/category.quartos
 import { CategoryQuartosModel } from 'src/app/shared/models/categoryQuartos.model';
 import { PhotosService } from 'src/app/shared/services/photos.service';
 import { Photo } from 'src/app/shared/models/hotel.model';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-cadastro',
@@ -17,6 +20,8 @@ import { Photo } from 'src/app/shared/models/hotel.model';
   styleUrl: './cadastro.component.scss'
 })
 export class CadastroQuartoComponent extends ComponentBase implements OnInit {
+  @ViewChild(SelectRemoteComponent) selectRemote!: SelectRemoteComponent;
+
   itemCadastro: QuartosModel = {} as QuartosModel;
   originalItemCadastro: QuartosModel = {} as QuartosModel; // Backup dos valores originais
 
@@ -72,7 +77,7 @@ export class CadastroQuartoComponent extends ComponentBase implements OnInit {
     // ou, para escutar mudanças:
     this.activatedRoute.paramMap.subscribe(params => {
       this.quartoId = params.get('quartoId');
-      this.apiUrlCategoryQuartos = "https://api.turify.com.br/api/CategoryQuarto/" + this.hotelId;
+      this.apiUrlCategoryQuartos = environment.apiBaseUrl + "/api/CategoryQuarto/" + this.hotelId;
       if (this.quartoId && this.hotelId) {
         this.showLoading();
         this.getAllPhotos(this.quartoId);
@@ -119,21 +124,9 @@ export class CadastroQuartoComponent extends ComponentBase implements OnInit {
             this.errorList.push('O campo Nome do quarto é obrigatório.');
         }
         
-        // Valida description 
-        if (!this.itemCadastro?.description || this.itemCadastro.description.trim() === '') { 
-            this.errorList.push('O campo descrição é obrigatório.');
-        }
-        
         // Valida maxOcupation
         if (!this.itemCadastro?.maxOcupation || this.itemCadastro.maxOcupation == 0) { 
             this.errorList.push('O campo ocupação máxima é obrigatório.');
-        }
-        
-        // Valida área
-        if (!this.itemCadastro?.areaSize || this.itemCadastro.description.trim() === '' || this.itemCadastro.areaSize == '0') { 
-            this.errorList.push('O campo área é obrigatório.');
-        }else if(isNaN(Number(this.itemCadastro.areaSize))){
-            this.errorList.push('O campo área deve ser um número válido.');
         }
         
         // Valida Categoria
@@ -153,12 +146,6 @@ export class CadastroQuartoComponent extends ComponentBase implements OnInit {
         if(!this.beds || this.beds?.length === 0){
             this.errorList.push('O campo Tipos de Cama é obrigatório.');
         }
-        
-        // Valida diff 
-        if (!this.itemCadastro?.diff || this.itemCadastro.diff.trim() === '') { 
-            this.errorList.push('O campo Diferenciais é obrigatório.');
-        }
-      
         
         // Retorna true se não houver erros
         if(this.errorList.length === 0)
@@ -226,21 +213,19 @@ export class CadastroQuartoComponent extends ComponentBase implements OnInit {
       // Por enquanto mantendo como está para compatibilidade
     }
   }
-  onCadastrarTipoQuarto(event: any) {
-    console.log(event);
-    this.showLoading();
-    this.categoryQuartosService.doPostCategoryQuarto(event, this.hotelId).subscribe({
-      error: (error: any) => {
-        console.log(error);
-        this.toastr.error(error.error?.mensagem || error.error?.excecaoMensagem || "Erro no servidor.");
-        this.categorys = [];
-        this.hideLoading();
+  onCadastrarTipoQuarto(searchTerm: string) {
+    const ref = this.modalService.open(CadastroTipoQuartoComponent, { size: 'lg', centered: true });
+    ref.componentInstance.hotelId = this.hotelId;
+    ref.componentInstance.nomePre = searchTerm;
+    ref.result.then(
+      () => {
+        // Recarrega as opções do select após criação bem-sucedida
+        if (this.selectRemote) {
+          this.selectRemote.loadInitialData();
+        }
       },
-      complete: () => {
-        this.hideLoading();
-      }
-
-    });
+      () => {}
+    );
   }
 
   onCadastrarComodidade() {
@@ -374,7 +359,9 @@ export class CadastroQuartoComponent extends ComponentBase implements OnInit {
         this.hideLoading();
       },
       complete: () => {
-        this.hideLoading();
+        if (!this.imagensNew || this.imagensNew.length === 0) {
+          this.hideLoading();
+        }
       }
     });
   }

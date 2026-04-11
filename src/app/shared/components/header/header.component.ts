@@ -1,6 +1,7 @@
-import { Component, Injector } from '@angular/core';
+import { Component, Injector, OnInit } from '@angular/core';
 import { ComponentBase } from '../component.base';
-import { MenubarService } from '../../services/menubar.service';
+import { HotelService } from '../../services/hotel.service';
+import { HoteisAllModel } from '../../models/hoteisAll.model';
 
 @Component({
   selector: 'app-header',
@@ -8,29 +9,42 @@ import { MenubarService } from '../../services/menubar.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent extends ComponentBase{
+export class HeaderComponent extends ComponentBase implements OnInit {
   public appTitle: string = 'Painel da Administração';
   public currentDate: Date = new Date();
-    constructor(
-        public override injector: Injector
-    ) {
-        super(injector);
-    }
+  public hoteis: HoteisAllModel[] = [];
+  public hotelSelecionadoId: string = '';
 
-  logout() {
-    console.log('=== LOGOUT CLICKED ===');
-    // Limpa todos os cookies
-    this.cookieService.deleteAll();
-    // Limpa storage
-    sessionStorage.clear();
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('id_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('nonce');
-    localStorage.removeItem('PKCE_verifier');
-    // Limpa os tokens do OAuth sem redirecionar
-    // Navega para login e AGUARDA o usuário clicar no botão
-    this.router.navigate(["/login"]);
-    console.log('✓ Logout complete, redirected to login page');
+  constructor(
+    public override injector: Injector,
+    private hotelService: HotelService
+  ) {
+    super(injector);
   }
+
+  override ngOnInit(): void {
+    this.hotelSelecionadoId = this.cookieService.get('selected_hotel_id') || '';
+    this.carregarHoteis();
+  }
+
+  carregarHoteis(): void {
+    this.hotelService.doGetUserIdHoteis().subscribe({
+      next: (response) => {
+        this.hoteis = response.data ?? [];
+        if (!this.hotelSelecionadoId && this.hoteis.length > 0) {
+          this.selecionarHotel(this.hoteis[0].id);
+        }
+      },
+      error: (err) => console.error('Erro ao carregar hotéis:', err)
+    });
+  }
+
+  selecionarHotel(id: string): void {
+    this.hotelSelecionadoId = id;
+    const hotel = this.hoteis.find(h => h.id === id);
+    this.cookieService.set('selected_hotel_id', id, { path: '/' });
+    this.cookieService.set('selected_hotel_name', hotel?.name ?? '', { path: '/' });
+  }
+
+  
 }

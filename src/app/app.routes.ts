@@ -1,5 +1,13 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './shared/guards/auth.guard';
+import { environment } from 'src/environments/environment';
+
+const devRoutes: Routes = environment.devBypass ? [
+  {
+    path: 'dev-login',
+    loadComponent: () => import('./features/dev-login/dev-login.component').then(m => m.DevLoginComponent)
+  }
+] : [];
 
 export const ROUTES: Routes = [
   {
@@ -11,6 +19,7 @@ export const ROUTES: Routes = [
     path: 'oauth-callback',
     loadComponent: () => import('./features/oauth-callback/oauth-callback.component').then(m => m.OAuthCallbackComponent)
   },
+  ...devRoutes,
   {
     path: 'home',
     loadChildren: () =>

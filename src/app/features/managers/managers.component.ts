@@ -94,16 +94,22 @@ export class ManagersComponent extends ComponentBase implements OnInit {
 
    override ngOnInit(): void {
     super.ngOnInit();
-    this.hotelId = this.activatedRoute.snapshot.paramMap.get('hotelId');
-   
-    // ou, para escutar mudanças:
-    this.activatedRoute.paramMap.subscribe(params => {
-      this.hotelId = params.get('hotelId');
-      if(this.hotelId) {
+    this.hotelId = this.cookieService.get("selected_hotel_id");
+    if(this.activatedRoute.snapshot.paramMap.get('hotelId')){
+      this.hotelId = this.activatedRoute.snapshot.paramMap.get('hotelId');
+      // ou, para escutar mudanças:
+      this.activatedRoute.paramMap.subscribe(params => {
+        this.hotelId = params.get('hotelId');
+      
+       console.log(this.hotelId);
+       if(this.hotelId) {
         this.getAllManagers(this.hotelId);
       }
     });
-
+    }
+    console.log("h:" + this.hotelId);
+    if(this.hotelId) 
+        this.getAllManagers(this.hotelId);
     
   }
 
@@ -111,6 +117,7 @@ export class ManagersComponent extends ComponentBase implements OnInit {
     this.loginService.GetAllPermissionUsers(hotelId).subscribe({
       next: (result) => {
         this.managers = result.data;
+        console.log(result.data);
       },
       error: (error) => {
         console.log(error);
