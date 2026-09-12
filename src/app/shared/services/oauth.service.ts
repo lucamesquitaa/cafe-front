@@ -114,7 +114,7 @@ export class AuthService {
         this.router.navigate(['/oauth-callback'], {
           queryParams: { 
             credential: response.credential,
-            returnUrl: new URLSearchParams(window.location.search).get('returnUrl') || '/admin'
+            returnUrl: new URLSearchParams(window.location.search).get('returnUrl') || '/cafeterias'
           }
         });
       }

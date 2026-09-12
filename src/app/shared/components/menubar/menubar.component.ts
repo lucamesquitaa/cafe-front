@@ -26,7 +26,6 @@ export class MenubarComponent extends ComponentBase implements OnInit {
   @Input() selected: string = '';
 
   isOpen = true;
-  isHoteisMenuOpen = true; // Nova propriedade para controlar o submenu
   window = window; // Adicionando propriedade window
 
   constructor(
@@ -48,21 +47,11 @@ export class MenubarComponent extends ComponentBase implements OnInit {
     this.menubarService.toggle();
   }
 
-  // Novo método para controlar o submenu de hotéis
-  toggleHoteisMenu() {
-    this.isHoteisMenuOpen = !this.isHoteisMenuOpen;
-  }
-
   // Método para verificar se é mobile
   isMobile(): boolean {
     return window.innerWidth < 768;
   }
 
-  motor(){
-    if (this.router.url !== 'motor') {
-          this.router.navigate(['/motor']);
-        }
-  }
   logout() {
     console.log('=== LOGOUT CLICKED ===');
     // Limpa todos os cookies

@@ -1,9 +1,7 @@
 import { Component, Injector } from '@angular/core';
-import { Observable, OperatorFunction } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map  } from 'rxjs/operators';
 import { ComponentBase } from 'src/app/shared/components/component.base';
-import { HoteisAllModel } from 'src/app/shared/models/hoteisAll.model';
-import { HotelService } from 'src/app/shared/services/hotel.service';
+import { CafeteriaModel } from 'src/app/shared/models/cafeteria.model';
+import { CafeteriaService } from 'src/app/shared/services/cafeteria.service';
 
 @Component({
   selector: 'app-home',
@@ -13,66 +11,80 @@ import { HotelService } from 'src/app/shared/services/hotel.service';
 })
 export class HomeComponent extends ComponentBase {
 
-  hotel: any;
+  cafeterias: CafeteriaModel[] = [];
+  filteredCafeterias: CafeteriaModel[] = [];
 
-  filteredHoteis: HoteisAllModel[] | undefined = [];
+  busca: string = '';
 
-  hoteis!: HoteisAllModel[] | undefined;
+  userLat: number | null = null;
+  userLng: number | null = null;
 
-  constructor(public override injector: Injector, private hotelService: HotelService) {
+  constructor(public override injector: Injector, private cafeteriaService: CafeteriaService) {
     super(injector);
-
   }
+
   override ngOnInit(): void {
-		this.doGetAllHoteis()
+    this.obterLocalizacao();
   }
 
-	doGetAllHoteis(){
-		this.hotelService.doGetAllHoteis().subscribe({
-			next: (result) => {
-				this.hoteis = result.data;
-				this.filteredHoteis = this.hoteis;
-			},
-		});
-	}
-
-	formatter = (result: any) => result.name.toUpperCase() + " (" + result.id + ")";
-
-	search: OperatorFunction<string, readonly any[]> = (text$: Observable<any>) =>
-		text$.pipe(
-			debounceTime(200),
-			distinctUntilChanged(),
-			map((term) =>
-				term === ''
-					? []
-					: this.hoteis?.filter((v) => v.name.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10) || [],
-			),
-		);
-
-		onHotelSelecionado() {
-			if(!this.hotel) {
-				this.filteredHoteis = this.hoteis;
-				return;
-				}
-				this.filteredHoteis = this.hoteis?.map((v) => this.hotel.name === v.name ? v : null).filter((v) => v !== null);
-	 	}
-
-		visitarSite(item: any){
-			this.router.navigate(['hotel/' + item.url]);
-		}
-
-		compartilhar() {
-    if (navigator.share) {
-      navigator.share({
-        title: this.hotel.name,
-        text: 'Visite este hotel incrível!',
-        url: window.location.href
-      })
-      .then(() => console.log('Compartilhado com sucesso!'))
-      .catch((error) => console.log('Erro ao compartilhar:', error));
+  obterLocalizacao(): void {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.userLat = position.coords.latitude;
+          this.userLng = position.coords.longitude;
+          this.doGetAllCafeterias();
+        },
+        () => {
+          this.doGetAllCafeterias();
+        }
+      );
     } else {
-      alert('O compartilhamento não é suportado neste navegador.');
+      this.doGetAllCafeterias();
     }
   }
-}
 
+  doGetAllCafeterias(): void {
+    this.showLoading();
+    this.cafeteriaService.doGetAll(this.userLat ?? undefined, this.userLng ?? undefined).subscribe({
+      next: (result) => {
+        this.cafeterias = result.data ?? [];
+        this.aplicarBusca();
+      },
+      error: () => {
+        this.hideLoading();
+      },
+      complete: () => {
+        this.hideLoading();
+      }
+    });
+  }
+
+  aplicarBusca(): void {
+    const termo = this.busca.trim().toLowerCase();
+    this.filteredCafeterias = termo === ''
+      ? this.cafeterias
+      : this.cafeterias.filter((c) => c.nome.toLowerCase().includes(termo));
+  }
+
+  distanciaKm(cafeteria: CafeteriaModel): number | null {
+    if (this.userLat == null || this.userLng == null) return null;
+
+    const R = 6371;
+    const dLat = this.toRad(cafeteria.lat - this.userLat);
+    const dLng = this.toRad(cafeteria.lng - this.userLng);
+    const a = Math.sin(dLat / 2) ** 2 +
+      Math.cos(this.toRad(this.userLat)) * Math.cos(this.toRad(cafeteria.lat)) *
+      Math.sin(dLng / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  private toRad(value: number): number {
+    return value * Math.PI / 180;
+  }
+
+  verDetalhe(item: CafeteriaModel): void {
+    this.router.navigate(['home', item.id]);
+  }
+}

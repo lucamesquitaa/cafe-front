@@ -24,13 +24,13 @@ export class LoginComponent extends ComponentBase implements OnInit, AfterViewIn
   override ngOnInit() {
     // Verifica se já está logado
     if (this.authService.isAuthenticated()) {
-      console.log('User already authenticated, redirecting to admin');
-      this.router.navigate(['/admin']);
+      console.log('User already authenticated, redirecting to cafeterias');
+      this.router.navigate(['/cafeterias']);
       return;
     }
 
     // Obtém returnUrl dos query params
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/admin';
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/cafeterias';
 
     // Inicializa o Google Auth
     this.initializeGoogleAuth();

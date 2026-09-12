@@ -41,7 +41,7 @@
   margin-top: 10px;
   width: 100%;
 }
-.hotelCard{
+.cafeteriaCard{
   width: 90%;
   padding: 10px;
   border-radius: 5px;
@@ -52,10 +52,23 @@
   flex-wrap: wrap;
   margin: 10px auto;
   border: 1px solid #8f8f8f;
+  cursor: pointer;
 }
-.hotelCard img{
+.cafeteriaCard img{
   width: 300px;
   height: 200px;
+  object-fit: cover;
+}
+.localizacaoInfo{
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-bottom: 4px;
+}
+.semResultados{
+  width: 90%;
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
 }
 .headerContainer {
   width: 100%;
@@ -78,7 +91,7 @@
   font-size: 1.5rem;
 }
 @media screen and (max-width: 570px){
-  .hotelCard{
+  .cafeteriaCard{
     justify-content: center;
   }
 }

@@ -1,0 +1,29 @@
+.telasContainer {
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #FFFFFF;
+}
+.containerDetalhe {
+  width: 90%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+}
+.fotoDetalhe {
+  width: 100%;
+  max-width: 500px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+.categoria {
+  color: #6c757d;
+  margin-bottom: 8px;
+}
+.endereco, .nota {
+  text-align: center;
+}

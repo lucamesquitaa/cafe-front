@@ -1,0 +1,13 @@
+<div class="telasContainer">
+  <div class="containerDetalhe" *ngIf="cafeteria">
+    <button class="btn btn-outline-secondary bi bi-arrow-left" (click)="voltar()"> Voltar</button>
+    <img [src]="cafeteria.fotoUrl" alt="foto da cafeteria" class="fotoDetalhe"/>
+    <h2>{{cafeteria.nome}}</h2>
+    <span class="categoria">{{cafeteria.categoriaPrincipal}}</span>
+    <p class="endereco"><i class="bi bi-geo-alt"></i> {{cafeteria.endereco}}</p>
+    <p class="nota" *ngIf="cafeteria.qtdAvaliacoes > 0">
+      <i class="bi bi-star-fill"></i> {{cafeteria.notaMedia | number:'1.1-1'}} ({{cafeteria.qtdAvaliacoes}} avaliações)
+    </p>
+    <p class="nota" *ngIf="cafeteria.qtdAvaliacoes === 0">Sem avaliações</p>
+  </div>
+</div>

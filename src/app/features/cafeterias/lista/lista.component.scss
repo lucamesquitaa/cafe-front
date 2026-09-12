@@ -1,0 +1,23 @@
+.cafeteriasContainer {
+  padding: 24px;
+}
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.tabelaWrapper {
+  overflow-x: auto;
+}
+.fotoMiniatura {
+  width: 60px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.semResultados {
+  text-align: center;
+  padding: 24px;
+  color: #6c757d;
+}

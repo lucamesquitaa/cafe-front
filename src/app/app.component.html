@@ -1,7 +1,6 @@
 
 <div class="telas">
     <app-menubar *ngIf="this.cookieService.get('access_token')"></app-menubar>
-    <app-header *ngIf="this.cookieService.get('access_token')"></app-header>
     <router-outlet></router-outlet>
     <div *ngIf="this.context.isLoading" class="overlay-spinner">
         <div class="overlay"></div>

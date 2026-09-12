@@ -1,0 +1,44 @@
+<div class="cafeteriasContainer">
+  <div class="cabecalho">
+    <h2>Cafeterias</h2>
+    <button class="btn btn-primary" (click)="onNovaCafeteria()">
+      <i class="bi bi-plus-circle"></i> Nova Cafeteria
+    </button>
+  </div>
+
+  <div class="tabelaWrapper">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Foto</th>
+          <th>Nome</th>
+          <th>Endereço</th>
+          <th>Categoria</th>
+          <th>Nota</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of cafeterias">
+          <td><img [src]="item.fotoUrl" alt="foto" class="fotoMiniatura"/></td>
+          <td>{{item.nome}}</td>
+          <td>{{item.endereco}}</td>
+          <td>{{item.categoriaPrincipal}}</td>
+          <td>
+            <span *ngIf="item.qtdAvaliacoes > 0">{{item.notaMedia | number:'1.1-1'}} ({{item.qtdAvaliacoes}})</span>
+            <span *ngIf="item.qtdAvaliacoes === 0">-</span>
+          </td>
+          <td>
+            <button class="btn btn-outline-primary btn-sm" (click)="onEdit(item.id)">
+              <i class="bi bi-pencil"></i> Editar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="cafeterias.length === 0" class="semResultados">
+      Nenhuma cafeteria cadastrada ainda.
+    </div>
+  </div>
+</div>
