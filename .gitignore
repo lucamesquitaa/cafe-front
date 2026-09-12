@@ -36,6 +36,7 @@ yarn-error.log
 testem.log
 /typings
 OAUTH2_README.md
+src/auth.config.ts
 
 # System files
 .DS_Store
