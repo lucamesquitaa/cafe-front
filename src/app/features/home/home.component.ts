@@ -1,7 +1,8 @@
 import { Component, Injector } from '@angular/core';
 import { ComponentBase } from 'src/app/shared/components/component.base';
-import { CafeteriaModel } from 'src/app/shared/models/cafeteria.model';
-import { CafeteriaService } from 'src/app/shared/services/cafeteria.service';
+import { GetAllCafeteriasModel } from 'src/app/shared/models/get-all-cafeterias.model';
+import { TypeCafeEnum, TypeCafeEnumLabel } from 'src/app/shared/models/type-cafe.enum';
+import { MOCK_CAFETERIAS } from 'src/app/shared/mocks/cafeterias.mock';
 
 @Component({
   selector: 'app-home',
@@ -11,15 +12,15 @@ import { CafeteriaService } from 'src/app/shared/services/cafeteria.service';
 })
 export class HomeComponent extends ComponentBase {
 
-  cafeterias: CafeteriaModel[] = [];
-  filteredCafeterias: CafeteriaModel[] = [];
+  cafeterias: GetAllCafeteriasModel[] = [];
+  filteredCafeterias: GetAllCafeteriasModel[] = [];
 
   busca: string = '';
 
   userLat: number | null = null;
   userLng: number | null = null;
 
-  constructor(public override injector: Injector, private cafeteriaService: CafeteriaService) {
+  constructor(public override injector: Injector) {
     super(injector);
   }
 
@@ -44,20 +45,12 @@ export class HomeComponent extends ComponentBase {
     }
   }
 
+  // TODO: substituir pelo consumo real do endpoint GetAllCafeterias quando disponível
   doGetAllCafeterias(): void {
     this.showLoading();
-    this.cafeteriaService.doGetAll(this.userLat ?? undefined, this.userLng ?? undefined).subscribe({
-      next: (result) => {
-        this.cafeterias = result.data ?? [];
-        this.aplicarBusca();
-      },
-      error: () => {
-        this.hideLoading();
-      },
-      complete: () => {
-        this.hideLoading();
-      }
-    });
+    this.cafeterias = MOCK_CAFETERIAS;
+    this.aplicarBusca();
+    this.hideLoading();
   }
 
   aplicarBusca(): void {
@@ -67,24 +60,19 @@ export class HomeComponent extends ComponentBase {
       : this.cafeterias.filter((c) => c.nome.toLowerCase().includes(termo));
   }
 
-  distanciaKm(cafeteria: CafeteriaModel): number | null {
-    if (this.userLat == null || this.userLng == null) return null;
-
-    const R = 6371;
-    const dLat = this.toRad(cafeteria.lat - this.userLat);
-    const dLng = this.toRad(cafeteria.lng - this.userLng);
-    const a = Math.sin(dLat / 2) ** 2 +
-      Math.cos(this.toRad(this.userLat)) * Math.cos(this.toRad(cafeteria.lat)) *
-      Math.sin(dLng / 2) ** 2;
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
+  enderecoCompleto(cafeteria: GetAllCafeteriasModel): string {
+    const partes = [cafeteria.endereco, cafeteria.numero];
+    if (cafeteria.complemento) {
+      partes.push(cafeteria.complemento);
+    }
+    return partes.filter(Boolean).join(', ');
   }
 
-  private toRad(value: number): number {
-    return value * Math.PI / 180;
+  categoriaLabel(categoria: TypeCafeEnum): string {
+    return TypeCafeEnumLabel[categoria] ?? '';
   }
 
-  verDetalhe(item: CafeteriaModel): void {
+  verDetalhe(item: GetAllCafeteriasModel): void {
     this.router.navigate(['home', item.id]);
   }
 }

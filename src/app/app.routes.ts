@@ -6,6 +6,10 @@ const devRoutes: Routes = environment.devBypass ? [
   {
     path: 'dev-login',
     loadComponent: () => import('./features/dev-login/dev-login.component').then(m => m.DevLoginComponent)
+  },
+  {
+    path: 'mock-login',
+    loadComponent: () => import('./features/mock-login/mock-login.component').then(m => m.MockLoginComponent)
   }
 ] : [];
 
