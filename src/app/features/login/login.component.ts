@@ -2,6 +2,7 @@ import { Component, Injector, OnInit, ElementRef, ViewChild, AfterViewInit } fro
 import { ActivatedRoute } from '@angular/router';
 import { ComponentBase } from 'src/app/shared/components/component.base';
 import { AuthService } from 'src/app/shared/services/oauth.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -11,6 +12,7 @@ import { AuthService } from 'src/app/shared/services/oauth.service';
 })
 export class LoginComponent extends ComponentBase implements OnInit, AfterViewInit {
   returnUrl: string = '';
+  readonly devBypass = environment.devBypass;
   @ViewChild('googleButton', { static: false }) googleButton!: ElementRef;
 
   constructor(

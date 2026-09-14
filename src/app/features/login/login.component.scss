@@ -73,6 +73,20 @@
   }
 }
 
+.dev-links {
+  margin-top: 16px;
+
+  a {
+    font-size: 13px;
+    color: #6dbe6d;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
 .alert {
   margin-top: 20px;
   padding: 12px;

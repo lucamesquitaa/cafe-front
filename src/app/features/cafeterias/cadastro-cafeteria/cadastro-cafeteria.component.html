@@ -1,0 +1,252 @@
+<div class="cadastro-wrapper">
+  <h1 class="cadastro-title">Cadastre sua cafeteria</h1>
+  <p class="cadastro-subtitle">Preencha as informações abaixo para colocar sua cafeteria no mapa.</p>
+
+  <mat-stepper #stepper [linear]="true" [orientation]="(isHandset$ | async) ? 'vertical' : 'horizontal'" class="cadastro-stepper">
+
+    <!-- Etapa 1: Responsável -->
+    <mat-step [stepControl]="responsavel" label="Responsável">
+      <form [formGroup]="responsavel" class="step-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Nome do responsável</mat-label>
+          <input matInput formControlName="nomeRep" required>
+          <mat-error *ngIf="responsavel.get('nomeRep')?.hasError('required')">Informe o nome do responsável.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>E-mail</mat-label>
+          <input matInput type="email" formControlName="emailRep" required>
+          <mat-error *ngIf="responsavel.get('emailRep')?.hasError('required')">Informe o e-mail.</mat-error>
+          <mat-error *ngIf="responsavel.get('emailRep')?.hasError('email')">E-mail inválido.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>CPF</mat-label>
+          <input matInput formControlName="cpfRep" appMask="cpf" placeholder="000.000.000-00" required>
+          <mat-error *ngIf="responsavel.get('cpfRep')?.hasError('required')">Informe o CPF.</mat-error>
+          <mat-error *ngIf="responsavel.get('cpfRep')?.hasError('cpfInvalido')">CPF inválido.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Telefone</mat-label>
+          <input matInput formControlName="telRep" appMask="telefone" placeholder="(00) 00000-0000" required>
+          <mat-error *ngIf="responsavel.get('telRep')?.hasError('required')">Informe o telefone.</mat-error>
+          <mat-error *ngIf="responsavel.get('telRep')?.hasError('telefoneInvalido')">Telefone inválido.</mat-error>
+        </mat-form-field>
+
+        <div class="step-actions">
+          <button mat-flat-button color="primary" type="button" (click)="avancar(stepper, responsavel)">Continuar</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <!-- Etapa 2: Dados legais -->
+    <mat-step [stepControl]="legal" label="Dados legais">
+      <form [formGroup]="legal" class="step-form">
+
+        <div class="alert-banner" *ngIf="cnpjExistente as existente">
+          <p>Esse CNPJ já está cadastrado como <strong>{{ existente.rede }}</strong>. Deseja cadastrar como nova unidade desta rede?</p>
+          <div class="alert-banner-actions">
+            <button mat-stroked-button type="button" (click)="cancelarRedeExistente()">Cancelar</button>
+            <button mat-flat-button color="primary" type="button" (click)="confirmarRedeExistente()">Confirmar</button>
+          </div>
+        </div>
+        <p class="info-text" *ngIf="redeConfirmada">Este cadastro será associado à rede existente.</p>
+
+        <mat-form-field appearance="outline">
+          <mat-label>CNPJ</mat-label>
+          <input matInput formControlName="cnpj" appMask="cnpj" placeholder="00.000.000/0000-00" required (blur)="onCnpjBlur()">
+          <mat-hint *ngIf="loadingCnpj">Consultando CNPJ...</mat-hint>
+          <mat-error *ngIf="legal.get('cnpj')?.hasError('required')">Informe o CNPJ.</mat-error>
+          <mat-error *ngIf="legal.get('cnpj')?.hasError('cnpjInvalido')">CNPJ inválido.</mat-error>
+        </mat-form-field>
+        <p class="field-error" *ngIf="errorCnpj">{{ errorCnpj }}</p>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Razão social</mat-label>
+          <input matInput formControlName="razao" required>
+          <mat-error *ngIf="legal.get('razao')?.hasError('required')">Informe a razão social.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Rede</mat-label>
+          <input matInput formControlName="rede" [matAutocomplete]="autoRede" required>
+          <mat-autocomplete #autoRede="matAutocomplete">
+            <mat-option *ngFor="let rede of (redesFiltradas$ | async)" [value]="rede">{{ rede }}</mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="legal.get('rede')?.hasError('required')">Informe a rede.</mat-error>
+        </mat-form-field>
+
+        <div class="step-actions">
+          <button mat-stroked-button type="button" matStepperPrevious>Voltar</button>
+          <button mat-flat-button color="primary" type="button" (click)="avancar(stepper, legal)">Continuar</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <!-- Etapa 3: Perfil público -->
+    <mat-step [stepControl]="perfil" label="Perfil público">
+      <form [formGroup]="perfil" class="step-form">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Nome da cafeteria</mat-label>
+          <input matInput formControlName="nome" required>
+          <mat-error *ngIf="perfil.get('nome')?.hasError('required')">Informe o nome.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Categoria principal</mat-label>
+          <mat-select formControlName="categoriaPrincipal" required>
+            <mat-option *ngFor="let categoria of categorias" [value]="categoria.value">{{ categoria.label }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="perfil.get('categoriaPrincipal')?.hasError('required')">Selecione uma categoria.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Descrição</mat-label>
+          <textarea matInput formControlName="descricao" rows="4" [maxlength]="descricaoMaxLength" required></textarea>
+          <mat-hint align="end">{{ contador('descricao') }}/{{ descricaoMaxLength }}</mat-hint>
+          <mat-error *ngIf="perfil.get('descricao')?.hasError('required')">Informe a descrição.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Diferencial</mat-label>
+          <textarea matInput formControlName="diferencial" rows="3" [maxlength]="diferencialMaxLength" required></textarea>
+          <mat-hint align="end">{{ contador('diferencial') }}/{{ diferencialMaxLength }}</mat-hint>
+          <mat-error *ngIf="perfil.get('diferencial')?.hasError('required')">Informe o diferencial.</mat-error>
+        </mat-form-field>
+
+        <div class="foto-upload">
+          <label class="foto-upload-label">Foto principal</label>
+          <img *ngIf="fotoPreviewUrl" [src]="fotoPreviewUrl" alt="Prévia da foto principal" class="foto-preview">
+          <input type="file" accept="image/*" (change)="onFotoSelected($event)">
+        </div>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Site (opcional)</mat-label>
+          <input matInput formControlName="url" placeholder="https://...">
+          <mat-error *ngIf="perfil.get('url')?.hasError('urlInvalida')">Informe uma URL válida.</mat-error>
+        </mat-form-field>
+
+        <div class="step-actions">
+          <button mat-stroked-button type="button" matStepperPrevious>Voltar</button>
+          <button mat-flat-button color="primary" type="button" (click)="avancar(stepper, perfil)">Continuar</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <!-- Etapa 4: Endereço -->
+    <mat-step [stepControl]="endereco" label="Endereço">
+      <form [formGroup]="endereco" class="step-form">
+
+        <mat-form-field appearance="outline">
+          <mat-label>CEP</mat-label>
+          <input matInput formControlName="cep" appMask="cep" placeholder="00000-000" required (blur)="onCepBlur()">
+          <mat-hint *ngIf="loadingCep">Consultando CEP...</mat-hint>
+          <mat-error *ngIf="endereco.get('cep')?.hasError('required')">Informe o CEP.</mat-error>
+          <mat-error *ngIf="endereco.get('cep')?.hasError('cepInvalido')">CEP inválido.</mat-error>
+        </mat-form-field>
+        <p class="field-error" *ngIf="errorCep">{{ errorCep }}</p>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Endereço</mat-label>
+          <input matInput formControlName="endereco" required>
+          <mat-error *ngIf="endereco.get('endereco')?.hasError('required')">Informe o endereço.</mat-error>
+        </mat-form-field>
+
+        <div class="grid-2">
+          <mat-form-field appearance="outline">
+            <mat-label>Número</mat-label>
+            <input matInput formControlName="numero" required>
+            <mat-error *ngIf="endereco.get('numero')?.hasError('required')">Informe o número.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Complemento</mat-label>
+            <input matInput formControlName="complemento">
+          </mat-form-field>
+        </div>
+
+        <div class="grid-2">
+          <mat-form-field appearance="outline">
+            <mat-label>Cidade</mat-label>
+            <input matInput formControlName="cidade" required>
+            <mat-error *ngIf="endereco.get('cidade')?.hasError('required')">Informe a cidade.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Estado</mat-label>
+            <input matInput formControlName="estado" maxlength="2" required>
+            <mat-error *ngIf="endereco.get('estado')?.hasError('required')">Informe o estado.</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="step-actions">
+          <button mat-stroked-button type="button" matStepperPrevious>Voltar</button>
+          <button mat-flat-button color="primary" type="button" (click)="avancar(stepper, endereco)">Revisar cadastro</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <!-- Etapa 5: Revisão final -->
+    <mat-step label="Revisão">
+      <div class="revisao">
+
+        <mat-card class="revisao-card">
+          <div class="revisao-card-header">
+            <h3>Responsável</h3>
+            <button mat-button type="button" (click)="irParaStep(stepper, 0)">Editar</button>
+          </div>
+          <p><strong>Nome:</strong> {{ responsavel.get('nomeRep')?.value }}</p>
+          <p><strong>E-mail:</strong> {{ responsavel.get('emailRep')?.value }}</p>
+          <p><strong>CPF:</strong> {{ responsavel.get('cpfRep')?.value }}</p>
+          <p><strong>Telefone:</strong> {{ responsavel.get('telRep')?.value }}</p>
+        </mat-card>
+
+        <mat-card class="revisao-card">
+          <div class="revisao-card-header">
+            <h3>Dados legais</h3>
+            <button mat-button type="button" (click)="irParaStep(stepper, 1)">Editar</button>
+          </div>
+          <p><strong>CNPJ:</strong> {{ legal.get('cnpj')?.value }}</p>
+          <p><strong>Razão social:</strong> {{ legal.get('razao')?.value }}</p>
+          <p><strong>Rede:</strong> {{ legal.get('rede')?.value }}</p>
+        </mat-card>
+
+        <mat-card class="revisao-card">
+          <div class="revisao-card-header">
+            <h3>Perfil público</h3>
+            <button mat-button type="button" (click)="irParaStep(stepper, 2)">Editar</button>
+          </div>
+          <img *ngIf="fotoPreviewUrl" [src]="fotoPreviewUrl" alt="Foto principal" class="foto-preview">
+          <p><strong>Nome:</strong> {{ perfil.get('nome')?.value }}</p>
+          <p><strong>Categoria:</strong> {{ categoriaLabel(perfil.get('categoriaPrincipal')?.value) }}</p>
+          <p><strong>Descrição:</strong> {{ perfil.get('descricao')?.value }}</p>
+          <p><strong>Diferencial:</strong> {{ perfil.get('diferencial')?.value }}</p>
+          <p *ngIf="perfil.get('url')?.value"><strong>Site:</strong> {{ perfil.get('url')?.value }}</p>
+        </mat-card>
+
+        <mat-card class="revisao-card">
+          <div class="revisao-card-header">
+            <h3>Endereço</h3>
+            <button mat-button type="button" (click)="irParaStep(stepper, 3)">Editar</button>
+          </div>
+          <p><strong>CEP:</strong> {{ endereco.get('cep')?.value }}</p>
+          <p><strong>Endereço:</strong> {{ endereco.get('endereco')?.value }}, {{ endereco.get('numero')?.value }} {{ endereco.get('complemento')?.value }}</p>
+          <p><strong>Cidade/Estado:</strong> {{ endereco.get('cidade')?.value }} - {{ endereco.get('estado')?.value }}</p>
+        </mat-card>
+
+        <p class="field-error" *ngIf="errorSubmit">{{ errorSubmit }}</p>
+
+        <div class="step-actions">
+          <button mat-stroked-button type="button" matStepperPrevious [disabled]="loadingSubmit">Voltar</button>
+          <button mat-flat-button color="primary" type="button" [disabled]="loadingSubmit" (click)="confirmarCadastro()">
+            <mat-progress-spinner *ngIf="loadingSubmit" diameter="18" mode="indeterminate"></mat-progress-spinner>
+            <span *ngIf="!loadingSubmit">Confirmar cadastro</span>
+          </button>
+        </div>
+      </div>
+    </mat-step>
+
+  </mat-stepper>
+</div>

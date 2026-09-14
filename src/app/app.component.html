@@ -1,7 +1,11 @@
 
 <div class="telas">
     <app-menubar *ngIf="this.cookieService.get('access_token')"></app-menubar>
-    <router-outlet></router-outlet>
+    <div class="app-content"
+         [class.page-with-menubar]="this.cookieService.get('access_token')"
+         [class.menu-collapsed]="!(menubarService.isOpen$ | async)">
+        <router-outlet></router-outlet>
+    </div>
     <div *ngIf="this.context.isLoading" class="overlay-spinner">
         <div class="overlay"></div>
         <div class="d-flex justify-content-center spinner-container">

@@ -4,11 +4,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
 import { MenubarComponent } from './components/menubar/menubar.component';
+import { InputMaskDirective } from './directives/input-mask.directive';
 
 
 @NgModule({
       declarations: [
             MenubarComponent,
+            InputMaskDirective,
       ],
   imports: [
         FormsModule,
@@ -25,6 +27,7 @@ import { MenubarComponent } from './components/menubar/menubar.component';
         NgbTypeaheadModule,
         HttpClientModule,
         MenubarComponent,
+        InputMaskDirective,
         ]
 })
 export class SharedModule { }
