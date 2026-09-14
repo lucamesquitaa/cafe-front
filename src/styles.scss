@@ -1,4 +1,5 @@
 @import "../node_modules/bootstrap/scss/bootstrap";
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
 
 /* Reset global */
 * {
@@ -12,12 +13,24 @@ body {
   overflow-x: hidden; /* Previne scroll horizontal */
 }
 
-/* Layout global para páginas com menubar */
+/*
+ * Padrão global de tamanho de tela.
+ * Toda página é renderizada dentro do wrapper ".app-content" (ver app.component.html),
+ * que reserva o espaço do menu lateral quando ele está aberto e se adapta
+ * automaticamente quando ele é colapsado ou em telas mobile. Nenhuma tela
+ * precisa replicar essa lógica individualmente.
+ */
 .page-with-menubar {
-  width: calc(100% - 280px);
-  margin-left: 280px;
   min-height: 100vh;
   box-sizing: border-box;
+  margin-left: var(--menubar-width-expanded);
+  width: calc(100% - var(--menubar-width-expanded));
+  transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+}
+
+.page-with-menubar.menu-collapsed {
+  margin-left: var(--menubar-width-collapsed);
+  width: calc(100% - var(--menubar-width-collapsed));
 }
 
 @media (max-width: 768px) {
@@ -121,6 +134,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
   --radius-1: 6px;
   --shadow-1: 0 1px 2px rgba(0,0,0,0.08);
+
+  --menubar-width-expanded: 280px;
+  --menubar-width-collapsed: 60px;
 }
 
 /* Layout helpers */

@@ -5,6 +5,8 @@ import { environment } from 'src/environments/environment';
 import { CafeteriaInputModel, CafeteriaModel } from '../models/cafeteria.model';
 import { ServiceGeneric } from './generic.service';
 import { ResponseApi } from '../models/response.api';
+import { Cafeteria, ExistePorCnpjModel } from '../models/cafeteria-cadastro.model';
+import { onlyDigits } from '../utils/mask.util';
 
 @Injectable({
   providedIn: 'root'
@@ -43,6 +45,21 @@ export class CafeteriaService extends ServiceGeneric<ResponseApi<any>> {
   doUpdate(id: string, cafeteria: CafeteriaInputModel): Observable<ResponseApi<CafeteriaModel>> {
     const headers = this.authHeaders();
     return this.http.put<ResponseApi<CafeteriaModel>>(this.urlServiceREST + "/" + id, cafeteria, { headers });
+  }
+
+  existePorCnpj(cnpj: string): Observable<ResponseApi<ExistePorCnpjModel>> {
+    const params = new HttpParams().set('cnpj', onlyDigits(cnpj));
+    return this.http.get<ResponseApi<ExistePorCnpjModel>>(this.urlServiceREST + '/existe-cnpj', { params });
+  }
+
+  buscarRedes(termo: string): Observable<ResponseApi<string[]>> {
+    const params = new HttpParams().set('termo', termo);
+    return this.http.get<ResponseApi<string[]>>(this.urlServiceREST + '/redes', { params });
+  }
+
+  criarCadastroCompleto(cafeteria: Cafeteria): Observable<ResponseApi<Cafeteria>> {
+    const headers = this.authHeaders();
+    return this.http.post<ResponseApi<Cafeteria>>(this.urlServiceREST, cafeteria, { headers });
   }
 
   private authHeaders(): HttpHeaders {

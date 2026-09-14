@@ -1,12 +1,15 @@
 
+<!-- Overlay para mobile: escurece e fecha o menu ao clicar fora -->
+<div class="menu-overlay" [class.active]="isOpen" (click)="toggleMenu()" (keydown.enter)="toggleMenu()" role="button" tabindex="-1" aria-label="Fechar menu" *ngIf="this.cookieService.get('access_token') != 'undefined'"></div>
+
 <!-- Sidebar Menu -->
-<div [@collapseExpand]="isOpen ? 'expanded' : 'collapsed'" 
+<div [@collapseExpand]="isOpen ? 'expanded' : 'collapsed'"
      [class.menu-open]="isOpen"
      [class.menu-collapsed]="!isOpen"
      [class.menu-expanded]="isOpen"
-     class="d-flex flex-column flex-shrink-0 p-3 text-white contBar" 
-     [style.width]="isOpen ? '280px' : '60px'" *ngIf="this.cookieService.get('access_token') != 'undefined'">
-    
+     class="d-flex flex-column flex-shrink-0 p-3 text-white contBar"
+     *ngIf="this.cookieService.get('access_token') != 'undefined'">
+
     <!-- Brand/Logo -->
     <div class="d-flex justify-content-center align-items-center" [ngClass]="isOpen ? 'justify-content-between' : 'justify-content-center'">
         <a class="menu-brand" [class.d-none]="!isOpen" (click)="toggleMenu()">

@@ -7,6 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbConfig, NgbDropdown, NgbDropdownModule, NgbModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { MenubarService } from './shared/services/menubar.service';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +19,8 @@ export class AppComponent extends ComponentBase implements OnInit{
   menusVisivel: boolean = true;
   textSaudacao = "Olá";
   constructor(public override injector: Injector,
-              ngbConfig: NgbConfig
+              ngbConfig: NgbConfig,
+              public menubarService: MenubarService
   ){
     super(injector);
     ngbConfig.animation = false;

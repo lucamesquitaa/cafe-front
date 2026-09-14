@@ -6,6 +6,10 @@ const devRoutes: Routes = environment.devBypass ? [
   {
     path: 'dev-login',
     loadComponent: () => import('./features/dev-login/dev-login.component').then(m => m.DevLoginComponent)
+  },
+  {
+    path: 'mock-login',
+    loadComponent: () => import('./features/mock-login/mock-login.component').then(m => m.MockLoginComponent)
   }
 ] : [];
 
@@ -20,11 +24,6 @@ export const ROUTES: Routes = [
     loadComponent: () => import('./features/oauth-callback/oauth-callback.component').then(m => m.OAuthCallbackComponent)
   },
   ...devRoutes,
-  {
-    path: 'home',
-    loadChildren: () =>
-      import('./features/home/home.module').then(m => m.HomeModule),
-  },
   {
     path: 'login',
     loadChildren: () =>

@@ -22,6 +22,10 @@
       <div *ngIf="isAuthenticated()" class="alert alert-info">
         Você já está logado. Redirecionando...
       </div>
+
+      <div *ngIf="devBypass" class="dev-links">
+        <a routerLink="/mock-login">🧪 Entrar com usuário mock (dev)</a>
+      </div>
     </div>
   </div>
 </div>

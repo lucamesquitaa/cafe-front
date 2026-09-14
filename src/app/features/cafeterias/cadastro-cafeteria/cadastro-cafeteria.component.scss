@@ -1,0 +1,124 @@
+.cadastro-wrapper {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px 16px 48px;
+}
+
+.cadastro-title {
+  margin-bottom: 4px;
+  font-size: 1.5rem;
+}
+
+.cadastro-subtitle {
+  margin: 0 0 24px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.cadastro-stepper {
+  background: transparent;
+}
+
+.step-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 16px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+
+  @media (max-width: 599px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.step-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.field-error {
+  color: #b3261e;
+  font-size: 0.85rem;
+  margin: -8px 0 8px;
+}
+
+.info-text {
+  color: #1b5e20;
+  font-size: 0.9rem;
+  margin: 0 0 12px;
+}
+
+.alert-banner {
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+
+  p {
+    margin: 0 0 12px;
+  }
+}
+
+.alert-banner-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.foto-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.foto-upload-label {
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.foto-preview {
+  max-width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.revisao {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 16px;
+}
+
+.revisao-card {
+  padding: 16px;
+
+  p {
+    margin: 4px 0;
+  }
+}
+
+.revisao-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+
+  h3 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+}
+
+mat-form-field {
+  width: 100%;
+}

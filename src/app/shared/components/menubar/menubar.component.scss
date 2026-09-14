@@ -27,17 +27,6 @@
     cursor: pointer;
 }
 
-/* Estilos globais para controlar o layout baseado no estado do menu */
-:host(.menu-collapsed) ~ * .page-with-menubar {
-    margin-left: 60px !important;
-    width: calc(100% - 60px) !important;
-}
-
-:host(.menu-expanded) ~ * .page-with-menubar {
-    margin-left: 280px !important;
-    width: calc(100% - 280px) !important;
-}
-
 .contBar hr{
     border-color: #4a5568;
     margin: 1rem 0;

@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { CookieService } from 'ngx-cookie-service';
 import { ToastrModule } from 'ngx-toastr';
 import { AuthInterceptor } from './shared/services/interceptor';
+import { MockApiInterceptor } from './shared/services/mock-api.interceptor';
 import { AuthService } from './shared/services/oauth.service';
 
 // Função para inicializar Google Identity Services
@@ -68,6 +69,11 @@ export function initializeGoogleAuth(authService: AuthService): () => Promise<vo
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: MockApiInterceptor,
       multi: true
     },
     {
