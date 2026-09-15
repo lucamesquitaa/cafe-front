@@ -37,14 +37,19 @@ export class CafeteriaService extends ServiceGeneric<ResponseApi<any>> {
     return this.http.get<ResponseApi<CafeteriaModel>>(this.urlServiceREST + "/" + id);
   }
 
+  obterCadastroCompleto(id: string): Observable<ResponseApi<Cafeteria>> {
+    const headers = this.authHeaders();
+    return this.http.get<ResponseApi<Cafeteria>>(this.urlServiceREST + "/" + id, { headers });
+  }
+
   doCreate(cafeteria: CafeteriaInputModel): Observable<ResponseApi<CafeteriaModel>> {
     const headers = this.authHeaders();
     return this.http.post<ResponseApi<CafeteriaModel>>(this.urlServiceREST, cafeteria, { headers });
   }
 
-  doUpdate(id: string, cafeteria: CafeteriaInputModel): Observable<ResponseApi<CafeteriaModel>> {
+  doUpdate(id: string, cafeteria: Cafeteria): Observable<ResponseApi<Cafeteria>> {
     const headers = this.authHeaders();
-    return this.http.put<ResponseApi<CafeteriaModel>>(this.urlServiceREST + "/" + id, cafeteria, { headers });
+    return this.http.put<ResponseApi<Cafeteria>>(this.urlServiceREST + "/" + id, cafeteria, { headers });
   }
 
   existePorCnpj(cnpj: string): Observable<ResponseApi<ExistePorCnpjModel>> {

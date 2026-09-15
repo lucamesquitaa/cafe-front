@@ -1,8 +1,12 @@
 <div class="cadastro-wrapper">
-  <h1 class="cadastro-title">Cadastre sua cafeteria</h1>
-  <p class="cadastro-subtitle">Preencha as informações abaixo para colocar sua cafeteria no mapa.</p>
+  <h1 class="cadastro-title">{{ isEdicao ? 'Editar cafeteria' : 'Cadastre sua cafeteria' }}</h1>
+  <p class="cadastro-subtitle">{{ isEdicao ? 'Atualize as informações da sua cafeteria.' : 'Preencha as informações abaixo para colocar sua cafeteria no mapa.' }}</p>
 
-  <mat-stepper #stepper [linear]="true" [orientation]="(isHandset$ | async) ? 'vertical' : 'horizontal'" class="cadastro-stepper">
+  <div class="cadastro-loading" *ngIf="loadingEdicao">
+    <mat-progress-spinner diameter="32" mode="indeterminate"></mat-progress-spinner>
+  </div>
+
+  <mat-stepper *ngIf="!loadingEdicao" #stepper [linear]="true" [orientation]="(isHandset$ | async) ? 'vertical' : 'horizontal'" class="cadastro-stepper">
 
     <!-- Etapa 1: Responsável -->
     <mat-step [stepControl]="responsavel" label="Responsável">
@@ -242,7 +246,7 @@
           <button mat-stroked-button type="button" matStepperPrevious [disabled]="loadingSubmit">Voltar</button>
           <button mat-flat-button color="primary" type="button" [disabled]="loadingSubmit" (click)="confirmarCadastro()">
             <mat-progress-spinner *ngIf="loadingSubmit" diameter="18" mode="indeterminate"></mat-progress-spinner>
-            <span *ngIf="!loadingSubmit">Confirmar cadastro</span>
+            <span *ngIf="!loadingSubmit">{{ isEdicao ? 'Salvar alterações' : 'Confirmar cadastro' }}</span>
           </button>
         </div>
       </div>

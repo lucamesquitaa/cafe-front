@@ -18,6 +18,12 @@
   background: transparent;
 }
 
+.cadastro-loading {
+  display: flex;
+  justify-content: center;
+  padding: 48px 0;
+}
+
 .step-form {
   display: flex;
   flex-direction: column;
