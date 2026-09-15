@@ -5,7 +5,7 @@ import { delay } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { ResponseApi } from '../models/response.api';
 import { Cafeteria, ExistePorCnpjModel } from '../models/cafeteria-cadastro.model';
-import { MOCK_CAFETERIA_DETALHES, MOCK_REDES, MOCK_REDE_POR_CNPJ } from '../mocks/cafeteria-detalhes.mock';
+import { MOCK_CAFETERIA_DETALHES, MOCK_CAFETERIAS_COMPLETAS, MOCK_REDES, MOCK_REDE_POR_CNPJ } from '../mocks/cafeteria-detalhes.mock';
 
 const CAFETERIAS_URL_FRAGMENT = '/api/cafeterias';
 
@@ -53,8 +53,8 @@ export class MockApiInterceptor implements HttpInterceptor {
     }
 
     if (req.method === 'GET' && idMatch) {
-      const cafeteria = MOCK_CAFETERIA_DETALHES.find((c) => c.id === idMatch[1]);
-      return this.ok(cafeteria ?? MOCK_CAFETERIA_DETALHES[0]);
+      const cafeteria = MOCK_CAFETERIAS_COMPLETAS.find((c) => c.id === idMatch[1]);
+      return this.ok(cafeteria ?? MOCK_CAFETERIAS_COMPLETAS[0]);
     }
 
     if (req.method === 'POST' && path === '') {

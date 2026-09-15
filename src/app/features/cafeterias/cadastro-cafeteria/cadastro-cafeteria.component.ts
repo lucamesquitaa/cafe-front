@@ -12,7 +12,7 @@ import { CepService } from 'src/app/shared/services/cep.service';
 import { CnpjService } from 'src/app/shared/services/cnpj.service';
 import { AuthService } from 'src/app/shared/services/oauth.service';
 import { cepValidator, cnpjValidator, cpfValidator, telefoneValidator, urlOpcionalValidator } from 'src/app/shared/validators/br-document.validators';
-import { onlyDigits } from 'src/app/shared/utils/mask.util';
+import { applyMask, onlyDigits } from 'src/app/shared/utils/mask.util';
 
 @Component({
   selector: 'app-cafeterias-cadastro-completo',
@@ -49,6 +49,10 @@ export class CadastroCafeteriaComponent extends ComponentBase implements OnInit 
 
   fotoPreviewUrl: string | null = null;
 
+  isEdicao = false;
+  cafeteriaId: string | null = null;
+  loadingEdicao = false;
+
   redesFiltradas$: Observable<string[]> = of([]);
 
   constructor(
@@ -65,14 +69,21 @@ export class CadastroCafeteriaComponent extends ComponentBase implements OnInit 
   }
 
   override ngOnInit(): void {
-    this.authService.userInfo$.subscribe((userInfo) => {
-      if (userInfo) {
-        this.responsavel.patchValue({
-          nomeRep: userInfo.name,
-          emailRep: userInfo.email,
-        });
-      }
-    });
+    this.cafeteriaId = this.activatedRoute.snapshot.paramMap.get('id');
+    this.isEdicao = !!this.cafeteriaId;
+
+    if (this.isEdicao) {
+      this.carregarParaEdicao(this.cafeteriaId!);
+    } else {
+      this.authService.userInfo$.subscribe((userInfo) => {
+        if (userInfo) {
+          this.responsavel.patchValue({
+            nomeRep: userInfo.name,
+            emailRep: userInfo.email,
+          });
+        }
+      });
+    }
 
     this.redesFiltradas$ = this.legal.get('rede')!.valueChanges.pipe(
       debounceTime(300),
@@ -85,6 +96,55 @@ export class CadastroCafeteriaComponent extends ComponentBase implements OnInit 
         );
       }),
     );
+  }
+
+  private carregarParaEdicao(id: string): void {
+    this.loadingEdicao = true;
+    this.cafeteriaService.obterCadastroCompleto(id).subscribe({
+      next: (res) => {
+        const cafeteria = res.data;
+        if (!cafeteria) return;
+
+        this.responsavel.patchValue({
+          nomeRep: cafeteria.nomeRep,
+          emailRep: cafeteria.emailRep,
+          cpfRep: applyMask('cpf', cafeteria.cpfRep),
+          telRep: applyMask('telefone', cafeteria.telRep),
+        });
+
+        this.legal.patchValue({
+          cnpj: applyMask('cnpj', cafeteria.cnpj),
+          razao: cafeteria.razao,
+          rede: cafeteria.rede,
+        });
+
+        this.perfil.patchValue({
+          nome: cafeteria.nome,
+          categoriaPrincipal: cafeteria.categoriaPrincipal,
+          descricao: cafeteria.descricao,
+          diferencial: cafeteria.diferencial,
+          url: cafeteria.url,
+        });
+
+        this.endereco.patchValue({
+          cep: applyMask('cep', cafeteria.cep),
+          endereco: cafeteria.endereco,
+          numero: cafeteria.numero,
+          complemento: cafeteria.complemento,
+          cidade: cafeteria.cidade,
+          estado: cafeteria.estado,
+        });
+
+        this.fotoPreviewUrl = cafeteria.fotoPrincipal || null;
+      },
+      error: (err) => {
+        this.toastr.error(err.error?.mensagem || err.error?.excecaoMensagem || 'Erro ao carregar a cafeteria.');
+        this.router.navigate(['/cafeterias']);
+      },
+      complete: () => {
+        this.loadingEdicao = false;
+      },
+    });
   }
 
   get responsavel(): FormGroup { return this.form.get('responsavel') as FormGroup; }
@@ -214,9 +274,13 @@ export class CadastroCafeteriaComponent extends ComponentBase implements OnInit 
     this.loadingSubmit = true;
     this.errorSubmit = null;
 
-    this.cafeteriaService.criarCadastroCompleto(payload).subscribe({
+    const request$ = this.isEdicao
+      ? this.cafeteriaService.doUpdate(this.cafeteriaId!, payload)
+      : this.cafeteriaService.criarCadastroCompleto(payload);
+
+    request$.subscribe({
       next: () => {
-        this.toastr.success('Cafeteria cadastrada com sucesso.');
+        this.toastr.success(this.isEdicao ? 'Cafeteria atualizada com sucesso.' : 'Cafeteria cadastrada com sucesso.');
         this.router.navigate(['/cafeterias']);
       },
       error: (err) => {
@@ -233,6 +297,7 @@ export class CadastroCafeteriaComponent extends ComponentBase implements OnInit 
     const v = this.form.getRawValue();
 
     return {
+      id: this.cafeteriaId || undefined,
       nome: v.perfil.nome,
       rede: v.legal.rede,
       url: v.perfil.url || '',
