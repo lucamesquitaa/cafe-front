@@ -2,7 +2,7 @@ import { Component, OnInit, Injector } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/shared/services/oauth.service';
 import { LoginService } from 'src/app/shared/services/login.service';
-import { ResultLoginModel } from 'src/app/shared/models/login.model';
+import { GoogleLoginModel } from 'src/app/shared/models/login.model';
 import { CookieService } from 'ngx-cookie-service';
 import { CommonModule } from '@angular/common';
 import { GoogleUserInfo } from 'src/app/shared/types/google-identity-services';
@@ -111,11 +111,11 @@ export class OAuthCallbackComponent implements OnInit {
 
       console.log('✓ Google credential decoded:', userInfo);
 
-      // Armazena as informações do usuário no AuthService
+      // Armazena as informações do usuário no AuthService (uso imediato na UI)
       this.authService.setUserInfo(userInfo);
 
-      // Chama o doLogin
-      this.callDoLogin(userInfo, returnUrl);
+      // Chama o doLogin enviando o idToken bruto para o backend validar
+      this.callDoLogin(credential, userInfo, returnUrl);
 
     } catch (error) {
       console.error('✗ Error processing Google credential:', error);
@@ -124,69 +124,46 @@ export class OAuthCallbackComponent implements OnInit {
     }
   }
 
-  private callDoLogin(userInfo: GoogleUserInfo, returnUrl: string): void {
+  private callDoLogin(idToken: string, userInfo: GoogleUserInfo, returnUrl: string): void {
     console.log('=== CALLING DO LOGIN ===');
-    
-    try {
-      if (!userInfo.email || !userInfo.name) {
-        throw new Error('Dados do usuário do Google incompletos');
-      }
 
-      // Mapeia para o formato esperado pelo doLogin
-      const nameParts = userInfo.name.split(' ');
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.slice(1).join(' ') || '';
+    const googleLogin: GoogleLoginModel = { idToken };
 
-      const loginData: ResultLoginModel = {
-        Id: userInfo.sub, // Google user ID
-        Email: userInfo.email,
-        FirstName: firstName,
-        LastName: lastName,
-        Photo: userInfo.picture || ''
-      };
+    // O backend valida o idToken junto ao Google e retorna o token da aplicação
+    this.loginService.doLogin(googleLogin).subscribe({
+      next: (response) => {
+        console.log('✓ DoLogin successful:', response);
 
-      console.log('Calling doLogin with data:', loginData);
-
-      // Chama o doLogin do backend
-      this.loginService.doLogin(loginData).subscribe({
-        next: (response) => {
-          console.log('✓ DoLogin successful:', response);
-          
-          // Armazena o token do backend se fornecido
-          if (response.token) {
-            this.cookieService.set('access_token', response.token, {
-              expires: 7, // 7 dias
-              path: '/',
-              secure: window.location.protocol === 'https:'
-            });
-            console.log('✓ Backend token stored');
-          }
-
-          // Armazena informações do usuário nos cookies
-          const cookieOptions = { expires: 7, path: '/', secure: window.location.protocol === 'https:' };
-          this.cookieService.set('user_first_name', loginData.FirstName, cookieOptions);
-          this.cookieService.set('user_last_name', loginData.LastName, cookieOptions);
-          this.cookieService.set('user_email', loginData.Email, cookieOptions);
-          this.cookieService.set('user_photo', loginData.Photo, cookieOptions);
-          console.log('✓ User info stored in cookies');
-
-          // Redireciona para a URL apropriada
-          console.log(`✓ Redirecting to: ${returnUrl}`);
-          this.isProcessing = false;
-          this.router.navigate([returnUrl]);
-        },
-        error: (error) => {
-          console.error('✗ DoLogin failed:', error);
-          this.errorMessage = 'Erro ao processar login no servidor. Tente novamente.';
-          this.isProcessing = false;
+        // Armazena o token do backend se fornecido
+        if (response.token) {
+          this.cookieService.set('access_token', response.token, {
+            expires: 7, // 7 dias
+            path: '/',
+            secure: window.location.protocol === 'https:'
+          });
+          console.log('✓ Backend token stored');
         }
-      });
 
-    } catch (error) {
-      console.error('✗ Error processing user data:', error);
-      this.errorMessage = 'Erro ao obter dados do usuário. Tente novamente.';
-      this.isProcessing = false;
-    }
+        // Armazena informações do usuário (obtidas do próprio Google) nos cookies para uso na UI
+        const cookieOptions = { expires: 7, path: '/', secure: window.location.protocol === 'https:' };
+        const nameParts = (userInfo.name || '').split(' ');
+        this.cookieService.set('user_first_name', userInfo.given_name || nameParts[0] || '', cookieOptions);
+        this.cookieService.set('user_last_name', userInfo.family_name || nameParts.slice(1).join(' ') || '', cookieOptions);
+        this.cookieService.set('user_email', userInfo.email, cookieOptions);
+        this.cookieService.set('user_photo', userInfo.picture || '', cookieOptions);
+        console.log('✓ User info stored in cookies');
+
+        // Redireciona para a URL apropriada
+        console.log(`✓ Redirecting to: ${returnUrl}`);
+        this.isProcessing = false;
+        this.router.navigate([returnUrl]);
+      },
+      error: (error) => {
+        console.error('✗ DoLogin failed:', error);
+        this.errorMessage = 'Erro ao processar login no servidor. Tente novamente.';
+        this.isProcessing = false;
+      }
+    });
   }
 
   redirectToLogin(): void {

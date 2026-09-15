@@ -40,7 +40,7 @@ export class AuthService {
   private userInfoSubject = new BehaviorSubject<GoogleUserInfo | null>(null);
   public userInfo$: Observable<GoogleUserInfo | null> = this.userInfoSubject.asObservable();
 
-  private readonly clientId = '838656343224-8cr24hdeobtu00kevkhj27sudbuq8g97.apps.googleusercontent.com';
+  private readonly clientId = environment.oauth.googleClientId;
   private isInitialized = false;
 
   constructor(

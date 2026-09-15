@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "hotelaria": {
+    "cafeteria": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/hotelaria",
+            "outputPath": "dist/cafeteria",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -77,15 +77,15 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "buildTarget": "hotelaria:build:development",
+            "buildTarget": "cafeteria:build:development",
             "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
             "production": {
-              "buildTarget": "hotelaria:build:production"
+              "buildTarget": "cafeteria:build:production"
             },
             "development": {
-              "buildTarget": "hotelaria:build:development"
+              "buildTarget": "cafeteria:build:development"
             }
           },
           "defaultConfiguration": "development"

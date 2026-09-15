@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, NgModule, provideZoneChangeDetection } from '@angular/core';
 import { AppComponent } from './app.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -12,7 +12,6 @@ import { CommonModule } from '@angular/common';
 import { CookieService } from 'ngx-cookie-service';
 import { ToastrModule } from 'ngx-toastr';
 import { AuthInterceptor } from './shared/services/interceptor';
-import { MockApiInterceptor } from './shared/services/mock-api.interceptor';
 import { AuthService } from './shared/services/oauth.service';
 
 // Função para inicializar Google Identity Services
@@ -64,16 +63,12 @@ export function initializeGoogleAuth(authService: AuthService): () => Promise<vo
     ToastrModule.forRoot()
   ],
   providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
     NgbDropdown,
     CookieService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: MockApiInterceptor,
       multi: true
     },
     {

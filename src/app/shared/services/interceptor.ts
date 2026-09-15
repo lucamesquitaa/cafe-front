@@ -20,7 +20,7 @@ export class AuthInterceptor implements HttpInterceptor {
         }
 
         const token = this.getValidToken();
-        
+
         // Se não há token válido e a requisição é para uma URL que precisa de autenticação
         if (!token && this.requiresAuth(req.url) && !environment.devBypass) {
             this.toastr.warning('Você precisa fazer login para acessar esta funcionalidade.', 'Login Necessário');

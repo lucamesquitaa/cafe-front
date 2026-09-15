@@ -11,14 +11,13 @@ import { CafeteriaService } from 'src/app/shared/services/cafeteria.service';
 })
 export class ListaComponent extends ComponentBase {
 
-  cafeterias!: CafeteriaModel[];
+  cafeterias: CafeteriaModel[] = [];
 
   constructor(public override injector: Injector, private cafeteriaService: CafeteriaService) {
     super(injector);
   }
 
   override ngOnInit(): void {
-    console.log('[ListaComponent] ngOnInit');
     this.doGetAllCafeterias();
   }
 

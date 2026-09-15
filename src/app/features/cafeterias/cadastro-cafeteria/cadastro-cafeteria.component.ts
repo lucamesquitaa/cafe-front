@@ -326,11 +326,11 @@ export class CadastroCafeteriaComponent extends ComponentBase implements OnInit 
       responsavel: this.fb.group({
         nomeRep: ['', Validators.required],
         emailRep: ['', [Validators.required, Validators.email]],
-        cpfRep: ['', [Validators.required, cpfValidator()]],
-        telRep: ['', [Validators.required, telefoneValidator()]],
+        cpfRep: ['', [Validators.required]], // cpfValidator()
+        telRep: ['', [Validators.required]], //, telefoneValidator()
       }),
       legal: this.fb.group({
-        cnpj: ['', [Validators.required, cnpjValidator()]],
+        cnpj: ['', [Validators.required]],//, cnpjValidator()
         razao: ['', Validators.required],
         rede: ['', Validators.required],
       }),
@@ -340,7 +340,7 @@ export class CadastroCafeteriaComponent extends ComponentBase implements OnInit 
         descricao: ['', [Validators.required, Validators.maxLength(this.descricaoMaxLength)]],
         diferencial: ['', [Validators.required, Validators.maxLength(this.diferencialMaxLength)]],
         fotoPrincipalFile: [null],
-        url: ['', urlOpcionalValidator()],
+        url: [''],
       }),
       endereco: this.fb.group({
         cep: ['', [Validators.required, cepValidator()]],

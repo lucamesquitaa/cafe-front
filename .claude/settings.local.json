@@ -1,7 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep -r \"app-quartoreserva\\\\|quartoreserva\" c:UsersUserDesktopreposhotelariasrc --include=*.html --include=*.ts)"
+      "Bash(grep -r \"app-quartoreserva\\\\|quartoreserva\" c:UsersUserDesktopreposcafeteriasrc --include=*.html --include=*.ts)"
     ]
   }
 }

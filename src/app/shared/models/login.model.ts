@@ -13,3 +13,6 @@ export interface ResultLoginModel{
   LastName: string;
   Photo: string;
 }
+export interface GoogleLoginModel{
+  idToken: string;
+}
