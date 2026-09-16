@@ -39,7 +39,7 @@ export class CafeteriaService extends ServiceGeneric<ResponseApi<any>> {
 
   obterCadastroCompleto(id: string): Observable<ResponseApi<Cafeteria>> {
     const headers = this.authHeaders();
-    return this.http.get<ResponseApi<Cafeteria>>(this.urlServiceREST + "/" + id, { headers });
+    return this.http.get<ResponseApi<Cafeteria>>(this.urlServiceREST + "/ByManager/" + id, { headers });
   }
 
   doCreate(cafeteria: CafeteriaInputModel): Observable<ResponseApi<CafeteriaModel>> {
@@ -47,9 +47,10 @@ export class CafeteriaService extends ServiceGeneric<ResponseApi<any>> {
     return this.http.post<ResponseApi<CafeteriaModel>>(this.urlServiceREST, cafeteria, { headers });
   }
 
-  doUpdate(id: string, cafeteria: Cafeteria): Observable<ResponseApi<Cafeteria>> {
+  doUpdate(id: string, cafeteria: Cafeteria, foto?: File | null): Observable<ResponseApi<Cafeteria>> {
     const headers = this.authHeaders();
-    return this.http.put<ResponseApi<Cafeteria>>(this.urlServiceREST + "/" + id, cafeteria, { headers });
+    const formData = this.montarFormData(cafeteria, foto);
+    return this.http.put<ResponseApi<Cafeteria>>(this.urlServiceREST + "/" + id, formData, { headers });
   }
 
   existePorCnpj(cnpj: string): Observable<ResponseApi<ExistePorCnpjModel>> {
@@ -62,9 +63,40 @@ export class CafeteriaService extends ServiceGeneric<ResponseApi<any>> {
     return this.http.get<ResponseApi<string[]>>(this.urlServiceREST + '/redes', { params });
   }
 
-  criarCadastroCompleto(cafeteria: Cafeteria): Observable<ResponseApi<Cafeteria>> {
+  criarCadastroCompleto(cafeteria: Cafeteria, foto?: File | null): Observable<ResponseApi<Cafeteria>> {
     const headers = this.authHeaders();
-    return this.http.post<ResponseApi<Cafeteria>>(this.urlServiceREST, cafeteria, { headers });
+    const formData = this.montarFormData(cafeteria, foto);
+    return this.http.post<ResponseApi<Cafeteria>>(this.urlServiceREST, formData, { headers });
+  }
+
+  private montarFormData(cafeteria: Cafeteria, foto?: File | null): FormData {
+    const formData = new FormData();
+
+    formData.append('nome', cafeteria.nome);
+    formData.append('rede', cafeteria.rede);
+    formData.append('url', cafeteria.url || '');
+    formData.append('descricao', cafeteria.descricao);
+    formData.append('diferencial', cafeteria.diferencial);
+    formData.append('ativo', String(cafeteria.ativo));
+    formData.append('endereco', cafeteria.endereco);
+    formData.append('numero', cafeteria.numero);
+    formData.append('cep', cafeteria.cep);
+    formData.append('cidade', cafeteria.cidade);
+    formData.append('estado', cafeteria.estado);
+    formData.append('complemento', cafeteria.complemento || '');
+    formData.append('categoriaPrincipal', String(cafeteria.categoriaPrincipal));
+    formData.append('cnpj', cafeteria.cnpj);
+    formData.append('razao', cafeteria.razao);
+    formData.append('nomeRep', cafeteria.nomeRep);
+    formData.append('telRep', cafeteria.telRep);
+    formData.append('cpfRep', cafeteria.cpfRep);
+    formData.append('emailRep', cafeteria.emailRep);
+
+    if (foto) {
+      formData.append('fotoPrincipal', foto, foto.name);
+    }
+
+    return formData;
   }
 
   private authHeaders(): HttpHeaders {

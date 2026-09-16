@@ -133,30 +133,35 @@ export class OAuthCallbackComponent implements OnInit {
     this.loginService.doLogin(googleLogin).subscribe({
       next: (response) => {
         console.log('✓ DoLogin successful:', response);
-
-        // Armazena o token do backend se fornecido
-        if (response.token) {
-          this.cookieService.set('access_token', response.token, {
-            expires: 7, // 7 dias
-            path: '/',
-            secure: window.location.protocol === 'https:'
-          });
-          console.log('✓ Backend token stored');
-        }
-
-        // Armazena informações do usuário (obtidas do próprio Google) nos cookies para uso na UI
-        const cookieOptions = { expires: 7, path: '/', secure: window.location.protocol === 'https:' };
-        const nameParts = (userInfo.name || '').split(' ');
-        this.cookieService.set('user_first_name', userInfo.given_name || nameParts[0] || '', cookieOptions);
-        this.cookieService.set('user_last_name', userInfo.family_name || nameParts.slice(1).join(' ') || '', cookieOptions);
-        this.cookieService.set('user_email', userInfo.email, cookieOptions);
-        this.cookieService.set('user_photo', userInfo.picture || '', cookieOptions);
-        console.log('✓ User info stored in cookies');
-
-        // Redireciona para a URL apropriada
-        console.log(`✓ Redirecting to: ${returnUrl}`);
         this.isProcessing = false;
-        this.router.navigate([returnUrl]);
+
+        try {
+          // Armazena o token do backend se fornecido
+          if (response?.token) {
+            this.cookieService.set('access_token', response.token, {
+              expires: 7, // 7 dias
+              path: '/',
+              secure: window.location.protocol === 'https:'
+            });
+            console.log('✓ Backend token stored');
+          }
+
+          // Armazena informações do usuário (obtidas do próprio Google) nos cookies para uso na UI
+          const cookieOptions = { expires: 7, path: '/', secure: window.location.protocol === 'https:' };
+          const nameParts = (userInfo.name || '').split(' ');
+          this.cookieService.set('user_first_name', userInfo.given_name || nameParts[0] || '', cookieOptions);
+          this.cookieService.set('user_last_name', userInfo.family_name || nameParts.slice(1).join(' ') || '', cookieOptions);
+          this.cookieService.set('user_email', userInfo.email || '', cookieOptions);
+          this.cookieService.set('user_photo', userInfo.picture || '', cookieOptions);
+          console.log('✓ User info stored in cookies');
+
+          // Redireciona para a URL apropriada
+          console.log(`✓ Redirecting to: ${returnUrl}`);
+          this.router.navigate([returnUrl]);
+        } catch (error) {
+          console.error('✗ Error finishing login after DoLogin success:', error);
+          this.errorMessage = 'Erro ao finalizar o login. Tente novamente.';
+        }
       },
       error: (error) => {
         console.error('✗ DoLogin failed:', error);

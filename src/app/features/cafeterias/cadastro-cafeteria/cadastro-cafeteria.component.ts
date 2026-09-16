@@ -3,7 +3,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatStepper } from '@angular/material/stepper';
 import { Observable, of } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, finalize, map, switchMap } from 'rxjs/operators';
 import { ComponentBase } from 'src/app/shared/components/component.base';
 import { Cafeteria, CepConsultaModel, CnpjConsultaModel, ExistePorCnpjModel } from 'src/app/shared/models/cafeteria-cadastro.model';
 import { TypeCafeEnum, TypeCafeEnumLabel } from 'src/app/shared/models/type-cafe.enum';
@@ -100,7 +100,9 @@ export class CadastroCafeteriaComponent extends ComponentBase implements OnInit 
 
   private carregarParaEdicao(id: string): void {
     this.loadingEdicao = true;
-    this.cafeteriaService.obterCadastroCompleto(id).subscribe({
+    this.cafeteriaService.obterCadastroCompleto(id).pipe(
+      finalize(() => this.loadingEdicao = false)
+    ).subscribe({
       next: (res) => {
         const cafeteria = res.data;
         if (!cafeteria) return;
@@ -141,9 +143,6 @@ export class CadastroCafeteriaComponent extends ComponentBase implements OnInit 
         this.toastr.error(err.error?.mensagem || err.error?.excecaoMensagem || 'Erro ao carregar a cafeteria.');
         this.router.navigate(['/cafeterias']);
       },
-      complete: () => {
-        this.loadingEdicao = false;
-      },
     });
   }
 
@@ -175,15 +174,14 @@ export class CadastroCafeteriaComponent extends ComponentBase implements OnInit 
     const cnpj = onlyDigits(control.value);
     this.loadingCnpj = true;
 
-    this.cnpjService.consultar(cnpj).subscribe({
+    this.cnpjService.consultar(cnpj).pipe(
+      finalize(() => this.loadingCnpj = false)
+    ).subscribe({
       next: (result: CnpjConsultaModel) => {
         this.legal.patchValue({ razao: result.razaoSocial });
       },
       error: () => {
         this.errorCnpj = 'Não foi possível consultar o CNPJ. Preencha a razão social manualmente.';
-      },
-      complete: () => {
-        this.loadingCnpj = false;
       },
     });
 
@@ -237,7 +235,9 @@ export class CadastroCafeteriaComponent extends ComponentBase implements OnInit 
     const cep = onlyDigits(control.value);
     this.loadingCep = true;
 
-    this.cepService.consultar(cep).subscribe({
+    this.cepService.consultar(cep).pipe(
+      finalize(() => this.loadingCep = false)
+    ).subscribe({
       next: (result: CepConsultaModel) => {
         if (result.erro) {
           this.errorCep = 'CEP não encontrado.';
@@ -251,9 +251,6 @@ export class CadastroCafeteriaComponent extends ComponentBase implements OnInit 
       },
       error: () => {
         this.errorCep = 'Não foi possível consultar o CEP. Preencha o endereço manualmente.';
-      },
-      complete: () => {
-        this.loadingCep = false;
       },
     });
   }
@@ -270,15 +267,18 @@ export class CadastroCafeteriaComponent extends ComponentBase implements OnInit 
     }
 
     const payload = this.montarPayload();
+    const foto: File | null = this.perfil.get('fotoPrincipalFile')?.value || null;
 
     this.loadingSubmit = true;
     this.errorSubmit = null;
 
     const request$ = this.isEdicao
-      ? this.cafeteriaService.doUpdate(this.cafeteriaId!, payload)
-      : this.cafeteriaService.criarCadastroCompleto(payload);
+      ? this.cafeteriaService.doUpdate(this.cafeteriaId!, payload, foto)
+      : this.cafeteriaService.criarCadastroCompleto(payload, foto);
 
-    request$.subscribe({
+    request$.pipe(
+      finalize(() => this.loadingSubmit = false)
+    ).subscribe({
       next: () => {
         this.toastr.success(this.isEdicao ? 'Cafeteria atualizada com sucesso.' : 'Cafeteria cadastrada com sucesso.');
         this.router.navigate(['/cafeterias']);
@@ -286,9 +286,6 @@ export class CadastroCafeteriaComponent extends ComponentBase implements OnInit 
       error: (err) => {
         this.errorSubmit = err.error?.mensagem || err.error?.excecaoMensagem || 'Erro ao enviar o cadastro.';
         this.toastr.error(this.errorSubmit!);
-      },
-      complete: () => {
-        this.loadingSubmit = false;
       },
     });
   }
@@ -310,7 +307,6 @@ export class CadastroCafeteriaComponent extends ComponentBase implements OnInit 
       cidade: v.endereco.cidade,
       estado: v.endereco.estado,
       complemento: v.endereco.complemento || '',
-      fotoPrincipal: this.fotoPreviewUrl || undefined,
       categoriaPrincipal: v.perfil.categoriaPrincipal,
       cnpj: onlyDigits(v.legal.cnpj),
       razao: v.legal.razao,
