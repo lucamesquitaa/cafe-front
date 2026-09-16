@@ -1,44 +1,60 @@
 <div class="cafeteriasContainer">
   <div class="cabecalho">
-    <h2>Cafeterias</h2>
+    <div>
+      <h2>Cafeterias</h2>
+      <p class="cabecalhoSubtitulo" *ngIf="listaCarregada && cards.length > 0">
+        {{ cards.length }} {{ cards.length === 1 ? 'cafeteria cadastrada' : 'cafeterias cadastradas' }}
+      </p>
+    </div>
     <button class="btn btn-primary" (click)="onNovaCafeteria()">
       <i class="bi bi-plus-circle"></i> Nova Cafeteria
     </button>
   </div>
 
-  <div class="tabelaWrapper">
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th>Foto</th>
-          <th>Nome</th>
-          <th>Endereço</th>
-          <th>Categoria</th>
-          <th>Nota</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of cafeterias">
-          <td><img [src]="item.fotoUrl" alt="foto" class="fotoMiniatura"/></td>
-          <td>{{item.nome}}</td>
-          <td>{{item.endereco}}</td>
-          <td>{{item.categoriaPrincipal}}</td>
-          <td>
-            <span *ngIf="item.qtdAvaliacoes > 0">{{item.notaMedia | number:'1.1-1'}} ({{item.qtdAvaliacoes}})</span>
-            <span *ngIf="item.qtdAvaliacoes === 0">-</span>
-          </td>
-          <td>
-            <button class="btn btn-outline-primary btn-sm" (click)="onEdit(item.id)">
-              <i class="bi bi-pencil"></i> Editar
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="cardsGrid" *ngIf="cards.length > 0">
+    <article class="cafeteriaCard" *ngFor="let card of cards; trackBy: trackById">
+      <button type="button" class="cardImagem" (click)="onEdit(card.cafeteria.id)" [attr.aria-label]="'Editar ' + card.cafeteria.nome">
+        <img *ngIf="card.imagemUrl"
+             [src]="card.imagemUrl"
+             [alt]="'Foto principal de ' + card.cafeteria.nome"
+             loading="lazy"
+             (error)="onImagemErro(card)">
 
-    <div *ngIf="cafeterias.length === 0" class="semResultados">
-      Nenhuma cafeteria cadastrada ainda.
-    </div>
+        <span *ngIf="!card.imagemUrl && card.carregandoFotos" class="cardImagemSkeleton" aria-hidden="true"></span>
+
+        <span *ngIf="!card.imagemUrl && !card.carregandoFotos" class="cardImagemPlaceholder">
+          <i class="bi bi-cup-hot"></i>
+          <small>Sem foto</small>
+        </span>
+
+        <span class="badgeCategoria">{{ categoriaLabel(card.cafeteria.categoriaPrincipal) }}</span>
+        <span class="badgeFotos" *ngIf="card.fotos.length > 0" [title]="card.fotos.length + ' foto(s) na galeria'">
+          <i class="bi bi-images"></i> {{ card.fotos.length }}
+        </span>
+      </button>
+
+      <div class="cardCorpo">
+        <h3 class="cardTitulo" [title]="card.cafeteria.nome">{{ card.cafeteria.nome }}</h3>
+        <p class="cardEndereco" *ngIf="enderecoCompleto(card.cafeteria) as endereco" [title]="endereco">
+          <i class="bi bi-geo-alt"></i>
+          <span>{{ endereco }}</span>
+        </p>
+        <p class="cardCep" *ngIf="card.cafeteria.cep">CEP {{ cepFormatado(card.cafeteria.cep) }}</p>
+      </div>
+
+      <div class="cardRodape">
+        <button class="btn btn-outline-primary btn-sm" (click)="onEdit(card.cafeteria.id)">
+          <i class="bi bi-pencil"></i> Editar
+        </button>
+      </div>
+    </article>
+  </div>
+
+  <div *ngIf="listaCarregada && cards.length === 0" class="semResultados">
+    <i class="bi bi-cup-hot"></i>
+    <p>Nenhuma cafeteria cadastrada ainda.</p>
+    <button class="btn btn-primary" (click)="onNovaCafeteria()">
+      <i class="bi bi-plus-circle"></i> Cadastrar a primeira
+    </button>
   </div>
 </div>

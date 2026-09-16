@@ -3,6 +3,7 @@ import { Injectable, Injector } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { CafeteriaInputModel, CafeteriaModel } from '../models/cafeteria.model';
+import { GetAllCafeteriasModel } from '../models/get-all-cafeterias.model';
 import { ServiceGeneric } from './generic.service';
 import { ResponseApi } from '../models/response.api';
 import { Cafeteria, ExistePorCnpjModel } from '../models/cafeteria-cadastro.model';
@@ -18,7 +19,7 @@ export class CafeteriaService extends ServiceGeneric<ResponseApi<any>> {
     super(injector);
   }
 
-  doGetAll(lat?: number, lng?: number, page: number = 1, pageSize: number = 20): Observable<ResponseApi<CafeteriaModel[]>> {
+  doGetAll(lat?: number, lng?: number, page: number = 1, pageSize: number = 20): Observable<ResponseApi<GetAllCafeteriasModel[]>> {
     let params = new HttpParams()
       .set('page', page)
       .set('pageSize', pageSize);
@@ -30,7 +31,7 @@ export class CafeteriaService extends ServiceGeneric<ResponseApi<any>> {
       params = params.set('lng', lng);
     }
 
-    return this.http.get<ResponseApi<CafeteriaModel[]>>(this.urlServiceREST, { params });
+    return this.http.get<ResponseApi<GetAllCafeteriasModel[]>>(this.urlServiceREST, { params });
   }
 
   doGetById(id: string): Observable<ResponseApi<CafeteriaModel>> {
