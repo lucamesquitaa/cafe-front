@@ -1,23 +1,226 @@
 .cafeteriasContainer {
   padding: 24px;
 }
+
 .cabecalho {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 16px;
+  gap: 16px;
+  margin-bottom: 20px;
+
+  h2 {
+    margin: 0;
+  }
 }
-.tabelaWrapper {
-  overflow-x: auto;
-}
-.fotoMiniatura {
-  width: 60px;
-  height: 45px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-.semResultados {
-  text-align: center;
-  padding: 24px;
+
+.cabecalhoSubtitulo {
+  margin: 4px 0 0;
   color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.cafeteriaCard {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.cardImagem {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  padding: 0;
+  border: 0;
+  background: #f1f3f5;
+  cursor: pointer;
+  overflow: hidden;
+
+  img,
+  .cardImagemSkeleton,
+  .cardImagemPlaceholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  img {
+    display: block;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover img {
+    transform: scale(1.04);
+  }
+
+  &:focus-visible {
+    outline: 3px solid #3498db;
+    outline-offset: -3px;
+  }
+}
+
+.cardImagemPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #adb5bd;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+
+  i {
+    font-size: 2.5rem;
+  }
+
+  small {
+    font-size: 0.85rem;
+  }
+}
+
+.cardImagemSkeleton {
+  background: linear-gradient(90deg, #e9ecef 25%, #f8f9fa 50%, #e9ecef 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.badgeCategoria,
+.badgeFotos {
+  position: absolute;
+  bottom: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  background: rgba(33, 37, 41, 0.75);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.badgeCategoria {
+  left: 10px;
+  max-width: calc(100% - 80px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badgeFotos {
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cardCorpo {
+  flex: 1;
+  padding: 14px 16px 4px;
+}
+
+.cardTitulo {
+  margin: 0 0 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardEndereco {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0 0 4px;
+  color: #495057;
+  font-size: 0.9rem;
+
+  i {
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: #3498db;
+  }
+
+  span {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+.cardCep {
+  margin: 0;
+  color: #868e96;
+  font-size: 0.8rem;
+}
+
+.cardRodape {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 16px 14px;
+}
+
+.semResultados {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 24px;
+  color: #6c757d;
+  text-align: center;
+  border: 1px dashed #dee2e6;
+  border-radius: 12px;
+
+  i {
+    font-size: 2.5rem;
+    color: #adb5bd;
+  }
+
+  p {
+    margin: 0 0 8px;
+  }
+}
+
+@media (max-width: 576px) {
+  .cafeteriasContainer {
+    padding: 16px;
+  }
+
+  .cabecalho {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cardsGrid {
+    grid-template-columns: 1fr;
+  }
 }
