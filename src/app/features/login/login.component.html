@@ -2,7 +2,6 @@
   <div class="login-container">
     <div class="login-content">
       <h2>Bem-vindo às Cafeterias</h2>
-      <p>Faça login com sua conta Google para continuar</p>
       
       <div class="login-buttons">
         <!-- Botão personalizado do Google Identity Services -->
@@ -21,10 +20,6 @@
       
       <div *ngIf="isAuthenticated()" class="alert alert-info">
         Você já está logado. Redirecionando...
-      </div>
-
-      <div *ngIf="devBypass" class="dev-links">
-        <a routerLink="/mock-login">🧪 Entrar com usuário mock (dev)</a>
       </div>
     </div>
   </div>
