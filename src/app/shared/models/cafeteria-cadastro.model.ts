@@ -14,7 +14,7 @@ export interface Cafeteria {
   cidade: string;
   estado: string;
   complemento: string;
-  fotoPrincipal?: string;
+  fotoPrincipal?: string | null;
   categoriaPrincipal: TypeCafeEnum;
   cnpj: string;
   razao: string;

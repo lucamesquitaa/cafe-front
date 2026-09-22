@@ -223,6 +223,14 @@ export class CadastroCafeteriaComponent extends ComponentBase implements OnInit 
     reader.readAsDataURL(file);
   }
 
+  removerFoto(input?: HTMLInputElement): void {
+    this.fotoPreviewUrl = null;
+    this.perfil.patchValue({ fotoPrincipalFile: null });
+    if (input) {
+      input.value = '';
+    }
+  }
+
   contador(controlName: string): number {
     return (this.perfil.get(controlName)?.value || '').length;
   }

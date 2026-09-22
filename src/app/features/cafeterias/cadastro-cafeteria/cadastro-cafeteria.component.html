@@ -122,8 +122,13 @@
 
         <div class="foto-upload">
           <label class="foto-upload-label">Foto principal</label>
-          <img *ngIf="fotoPreviewUrl" [src]="fotoPreviewUrl" alt="Prévia da foto principal" class="foto-preview">
-          <input type="file" accept="image/*" (change)="onFotoSelected($event)">
+          <div class="foto-preview-wrapper" *ngIf="fotoPreviewUrl">
+            <img [src]="fotoPreviewUrl" alt="Prévia da foto principal" class="foto-preview">
+            <button mat-icon-button type="button" class="foto-remove-btn" (click)="removerFoto(fotoInput)" aria-label="Remover foto principal">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+          <input #fotoInput type="file" accept="image/*" (change)="onFotoSelected($event)">
         </div>
 
         <mat-form-field appearance="outline">
